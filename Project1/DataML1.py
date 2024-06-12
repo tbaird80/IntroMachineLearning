@@ -1,22 +1,39 @@
 from ucimlrepo import fetch_ucirepo
-import numpy as np
 import pandas as pd
-
+import os
 
 def dataSourcing(dataName):
-    if dataName == 'BreastCancer':
-        # fetch dataset
-        breast_cancer_wisconsin_original = fetch_ucirepo(id=15)
 
-        # data (as pandas dataframes)
-        dataFeatures = pd.DataFrame(breast_cancer_wisconsin_original.data.features)
-        dataTargets = pd.DataFrame(breast_cancer_wisconsin_original.data.targets)
+    featurePath = dataName + "/featureData.csv"
+    targetPath = dataName + "/targetData.csv"
+
+    if dataName == 'BreastCancer':
+
+        if os.path.exists(featurePath) & os.path.exists(targetPath):
+            print(dataName + "data exists, reading from csv")
+
+            dataFeatures = pd.read_csv(featurePath, index_col=0)
+            dataTargets = pd.read_csv(targetPath, index_col=0)
+
+        else:
+            print(dataName + "data does not exist, reading from source")
+
+            # fetch dataset
+            breast_cancer_wisconsin_original = fetch_ucirepo(id=15)
+
+            # data (as pandas dataframes)
+            dataFeatures = pd.DataFrame(breast_cancer_wisconsin_original.data.features)
+            dataTargets = pd.DataFrame(breast_cancer_wisconsin_original.data.targets)
+
+            dataFeatures.to_csv(featurePath, index=True)
+            dataTargets.to_csv(targetPath, index=True)
 
         # remove NAs
         dataFeatures = dataFeatures.dropna()
 
         # assign types to all columns
         dataFeatures.loc[:, 'Clump_thickness'] = dataFeatures['Clump_thickness'].astype(float)
+        dataFeatures.loc[:, 'Uniformity_of_cell_size'] = dataFeatures['Uniformity_of_cell_size'].astype(float)
         dataFeatures.loc[:, 'Uniformity_of_cell_shape'] = dataFeatures['Uniformity_of_cell_shape'].astype(float)
         dataFeatures.loc[:, 'Marginal_adhesion'] = dataFeatures['Marginal_adhesion'].astype(float)
         dataFeatures.loc[:, 'Single_epithelial_cell_size'] = dataFeatures['Single_epithelial_cell_size'].astype(float)

@@ -35,13 +35,11 @@ def hybridDistance(x, y, p, hybrid):
         return (np.sum(abs(x - y) ** p)) ** (1 / p)
 
 
-def kNearestNeighbor(targetRow, trainingData, validationSet, k, p, hybrid, error, kernal, isReg):
-    # grab all of the index values
-    rowIndices = trainingData.index.tolist()
+def kNearestNeighbor(targetRow, trainingData, validationSet, k, p, hybrid, error, kernel, isReg):
     # create our distance data frame to track all values
     distanceTable = pd.DataFrame({'distance': []})
 
-    for comparisonRow in rowIndices:
+    for comparisonRow in trainingData.index.tolist():
         # skip iteration when we are looking at same row
         if targetRow.name == comparisonRow:
             continue
@@ -56,12 +54,13 @@ def kNearestNeighbor(targetRow, trainingData, validationSet, k, p, hybrid, error
 
     # find the class that is the most common occurance
     if isReg:
-        estimate = kNearestTable['Class'].value_counts().idxmax()
+        estimate = math.exp(kernel * (sum(kNearestTable['Class'] * kNearestTable['distance']) / sum(kNearestTable['distance'])))
     else:
-        estimate = math.exp(kernal * (sum(kNearestTable['Class'] * kNearestTable['distance'])/sum(kNearestTable['distance'])))
+        estimate = kNearestTable['Class'].value_counts().idxmax()
 
     # create output series
     nearestNeighbor = {
+        'testID': 0,
         'nearestNeighbors': kNearestTable.index.tolist(),
         'expectedValue': estimate,
         'actualValue': validationSet.loc[targetRow.name].Class
@@ -75,7 +74,7 @@ def kNearestNeighbor(targetRow, trainingData, validationSet, k, p, hybrid, error
     return nearestNeighbor
 
 
-def condensedNearestNeighbor(originalDataSet, validationSet, k, p, hybrid, error, kernal, isReg):
+def condensedNearestNeighbor(originalDataSet, validationSet, k, p, hybrid, error, kernel, isReg):
     condensedSet = originalDataSet.sample()
     originalDataSet = originalDataSet.drop(condensedSet.index.tolist(), axis='index')
     condensedSetSize = len(condensedSet)
@@ -84,7 +83,7 @@ def condensedNearestNeighbor(originalDataSet, validationSet, k, p, hybrid, error
     while condensedSetSize != updatedSize:
         updatedSize = condensedSetSize
         for currentRow in originalDataSet.index.tolist():
-            nextValueTest = kNearestNeighbor(originalDataSet.loc[currentRow], condensedSet, validationSet, k, p, hybrid, error, kernal, isReg)
+            nextValueTest = kNearestNeighbor(originalDataSet.loc[currentRow], condensedSet, validationSet, k, p, hybrid, error, kernel, isReg)
             if nextValueTest['correctAssignment'] == False:
                 condensedSet.loc[currentRow] = originalDataSet.loc[currentRow]
                 originalDataSet = originalDataSet.drop(currentRow, axis='index')
