@@ -14,7 +14,7 @@ def KNNTuning(dataSetID, features, targets, normalCol, tuningMap, hybridCols, is
     tuneMultiIndex = pd.MultiIndex.from_product(tuningMap.values(), names=tuningMap.keys())
     allTuneParameters = pd.DataFrame(index=tuneMultiIndex).reset_index()
 
-    subsetTuneParameters = allTuneParameters.sample(n=3)
+    subsetTuneParameters = allTuneParameters.sample(n=5)
 
     subsetTuneParameters['AveragePerformance'] = [0] * len(subsetTuneParameters)
     subsetTuneParameters['TestsRun'] = [0] * len(subsetTuneParameters)

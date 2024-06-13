@@ -84,7 +84,7 @@ def condensedNearestNeighbor(originalDataSet, validationSet, k, p, hybrid, error
         updatedSize = condensedSetSize
         for currentRow in originalDataSet.index.tolist():
             nextValueTest = kNearestNeighbor(originalDataSet.loc[currentRow], condensedSet, validationSet, k, p, hybrid, error, kernel, isReg)
-            if nextValueTest['correctAssignment'] == False:
+            if not nextValueTest['correctAssignment']:
                 condensedSet.loc[currentRow] = originalDataSet.loc[currentRow]
                 originalDataSet = originalDataSet.drop(currentRow, axis='index')
         condensedSetSize = len(condensedSet)
