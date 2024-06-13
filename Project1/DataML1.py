@@ -8,10 +8,11 @@ def dataSourcing(dataName):
     targetPath = dataName + "/targetData.csv"
 
     if dataName == 'BreastCancer':
-
+        # check if file path exists, read from file if so, otherwise grab from online repo
         if os.path.exists(featurePath) & os.path.exists(targetPath):
             print(dataName + "data exists, reading from csv")
 
+            # read from local directory
             dataFeatures = pd.read_csv(featurePath, index_col=0)
             dataTargets = pd.read_csv(targetPath, index_col=0)
 
@@ -25,6 +26,7 @@ def dataSourcing(dataName):
             dataFeatures = pd.DataFrame(breast_cancer_wisconsin_original.data.features)
             dataTargets = pd.DataFrame(breast_cancer_wisconsin_original.data.targets)
 
+            # write to local directory
             dataFeatures.to_csv(featurePath, index=True)
             dataTargets.to_csv(targetPath, index=True)
 
@@ -47,12 +49,27 @@ def dataSourcing(dataName):
         dataTargets.columns = ['Class']
 
     elif dataName == 'CarEval':
-        # fetch dataset
-        car_evaluation = fetch_ucirepo(id=19)
+        # check if file path exists, read from file if so, otherwise grab from online repo
+        if os.path.exists(featurePath) & os.path.exists(targetPath):
+            print(dataName + "data exists, reading from csv")
 
-        # store relevant data (as pandas dataframes)
-        dataFeatures = pd.DataFrame(car_evaluation.data.features)
-        dataTargets = pd.DataFrame(car_evaluation.data.targets)
+            # read from local directory
+            dataFeatures = pd.read_csv(featurePath, index_col=0)
+            dataTargets = pd.read_csv(targetPath, index_col=0)
+
+        else:
+            print(dataName + "data does not exist, reading from source")
+
+            # fetch dataset
+            car_evaluation = fetch_ucirepo(id=19)
+
+            # store relevant data (as pandas dataframes)
+            dataFeatures = pd.DataFrame(car_evaluation.data.features)
+            dataTargets = pd.DataFrame(car_evaluation.data.targets)
+
+            # write to the local directory
+            dataFeatures.to_csv(featurePath, index=True)
+            dataTargets.to_csv(targetPath, index=True)
 
         # assign types to all columns
         dataFeatures = pd.get_dummies(dataFeatures).astype(bool)
@@ -61,12 +78,27 @@ def dataSourcing(dataName):
         dataTargets.columns = ['Class']
 
     elif dataName == 'CongressVoting':
-        # fetch dataset
-        congressional_voting_records = fetch_ucirepo(id=105)
+        # check if file path exists, read from file if so, otherwise grab from online repo
+        if os.path.exists(featurePath) & os.path.exists(targetPath):
+            print(dataName + "data exists, reading from csv")
 
-        # store relevant data (as pandas dataframes)
-        dataFeatures = pd.DataFrame(congressional_voting_records.data.features)
-        dataTargets = pd.DataFrame(congressional_voting_records.data.targets)
+            # read from local directory
+            dataFeatures = pd.read_csv(featurePath, index_col=0)
+            dataTargets = pd.read_csv(targetPath, index_col=0)
+
+        else:
+            print(dataName + "data does not exist, reading from source")
+
+            # fetch dataset
+            congressional_voting_records = fetch_ucirepo(id=105)
+
+            # store relevant data (as pandas dataframes)
+            dataFeatures = pd.DataFrame(congressional_voting_records.data.features)
+            dataTargets = pd.DataFrame(congressional_voting_records.data.targets)
+
+            # write to the local directory
+            dataFeatures.to_csv(featurePath, index=True)
+            dataTargets.to_csv(targetPath, index=True)
 
         # reset the data to be integers. helps to account for abstain votes which will be 0's
         dataFeatures = dataFeatures.replace({'y': 1, 'n': -1})
@@ -97,12 +129,27 @@ def dataSourcing(dataName):
         dataTargets.columns = ['Class']
 
     elif dataName == 'Abalone':
-        # fetch dataset
-        abalone = fetch_ucirepo(id=1)
+        # check if file path exists, read from file if so, otherwise grab from online repo
+        if os.path.exists(featurePath) & os.path.exists(targetPath):
+            print(dataName + "data exists, reading from csv")
 
-        # store relevant data (as pandas dataframes)
-        dataFeatures = pd.DataFrame(abalone.data.features)
-        dataTargets = pd.DataFrame(abalone.data.targets)
+            # read from local directory
+            dataFeatures = pd.read_csv(featurePath, index_col=0)
+            dataTargets = pd.read_csv(targetPath, index_col=0)
+
+        else:
+            print(dataName + "data does not exist, reading from source")
+
+            # fetch dataset
+            abalone = fetch_ucirepo(id=1)
+
+            # store relevant data (as pandas dataframes)
+            dataFeatures = pd.DataFrame(abalone.data.features)
+            dataTargets = pd.DataFrame(abalone.data.targets)
+
+            # write to the local directory
+            dataFeatures.to_csv(featurePath, index=True)
+            dataTargets.to_csv(targetPath, index=True)
 
         # assign types to all columns
         # performing one hot encoding for the sex column and then dropping the original column
@@ -125,12 +172,27 @@ def dataSourcing(dataName):
         dataTargets.columns = ['Class']
 
     elif dataName == 'ComputerHardware':
-        # fetch dataset
-        computer_hardware = fetch_ucirepo(id=29)
+        # check if file path exists, read from file if so, otherwise grab from online repo
+        if os.path.exists(featurePath) & os.path.exists(targetPath):
+            print(dataName + "data exists, reading from csv")
 
-        # data (as pandas dataframes)
-        dataFeatures = pd.DataFrame(computer_hardware.data.features)
-        dataTargets = pd.DataFrame(dataFeatures['PRP'])
+            # read from local directory
+            dataFeatures = pd.read_csv(featurePath, index_col=0)
+            dataTargets = pd.read_csv(targetPath, index_col=0)
+
+        else:
+            print(dataName + "data does not exist, reading from source")
+
+            # fetch dataset
+            computer_hardware = fetch_ucirepo(id=29)
+
+            # data (as pandas dataframes)
+            dataFeatures = pd.DataFrame(computer_hardware.data.features)
+            dataTargets = pd.DataFrame(dataFeatures['PRP'])
+
+            # write to the local directory
+            dataFeatures.to_csv(featurePath, index=True)
+            dataTargets.to_csv(targetPath, index=True)
 
         # drop the columns that we do not need
         dataFeatures = dataFeatures.drop(columns=['VendorName', 'ModelName', 'PRP', 'ERP'])
@@ -148,12 +210,27 @@ def dataSourcing(dataName):
         dataTargets.columns = ['Class']
 
     elif dataName == 'ForestFires':
-        # fetch dataset
-        forest_fires = fetch_ucirepo(id=162)
+        # check if file path exists, read from file if so, otherwise grab from online repo
+        if os.path.exists(featurePath) & os.path.exists(targetPath):
+            print(dataName + "data exists, reading from csv")
 
-        # data (as pandas dataframes)
-        dataFeatures = pd.DataFrame(forest_fires.data.features)
-        dataTargets = pd.DataFrame(forest_fires.data.targets)
+            # read from local directory
+            dataFeatures = pd.read_csv(featurePath, index_col=0)
+            dataTargets = pd.read_csv(targetPath, index_col=0)
+
+        else:
+            print(dataName + "data does not exist, reading from source")
+
+            # fetch dataset
+            forest_fires = fetch_ucirepo(id=162)
+
+            # data (as pandas dataframes)
+            dataFeatures = pd.DataFrame(forest_fires.data.features)
+            dataTargets = pd.DataFrame(forest_fires.data.targets)
+
+            # write to the local directory
+            dataFeatures.to_csv(featurePath, index=True)
+            dataTargets.to_csv(targetPath, index=True)
 
         # assign types to all columns
         # setting these to integers as they are ordinal values

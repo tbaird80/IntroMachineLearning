@@ -16,8 +16,8 @@ def hybridDistance(x, y, p, hybrid):
     if hybrid:
         distance = 0
         for index, value in x.items():
-            if any(value == [True, False]):
-                distance += 0 + x.loc[index] - y.loc[index]
+            if x[index].dtype == 'bool':
+                distance += abs(int(x.loc[index]) - int(y.loc[index]))
             elif index == 'month':
                 newDistance = abs(x.loc[index] - y.loc[index])
                 if newDistance > 6:

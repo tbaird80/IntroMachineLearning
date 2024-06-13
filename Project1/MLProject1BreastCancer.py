@@ -1,9 +1,7 @@
 import DataML1
 from datetime import datetime
-import pandas as pd
 import KNNTuningML1
 import os
-import KNNTestML1
 
 if __name__ == '__main__':
     # function inputs
@@ -43,7 +41,7 @@ if __name__ == '__main__':
 
     # ----------------------Testing-----------------------------
     #source our data
-    # uniqueTestID = 'BreastCancer/11.06.2024_10.37.05'
+    # uniqueTestID = dataTitle + '/'
     #
     # #read in our files from tuning
     # tunedParametersFile = uniqueTestID + "/ParameterTuningFile.csv"
