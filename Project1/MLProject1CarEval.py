@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     # ----------------------Testing-----------------------------
     # source our data
-    uniqueTestID = dataTitle + '/KEEPTestCases'
+    uniqueTestID = dataTitle + '/'
 
     # read in our files from tuning
     tunedParametersFile = uniqueTestID + "/ParameterTuningFile.csv"
