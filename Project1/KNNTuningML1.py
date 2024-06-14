@@ -3,26 +3,40 @@ from datetime import datetime
 import AuxML1
 
 def KNNTuning(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isReg):
+    """
+
+    @param dataSetID:
+    @param features:
+    @param targets:
+    @param normalCol:
+    @param tuningMap:
+    @param hybridCols:
+    @param isReg:
+    @return:
+    """
 
     tuneFileName = dataSetID + "/ParameterTuningFile.csv"
     testCasesFileName = dataSetID + "/TestSetRecord.csv"
+    tuneRawFileName = dataSetID + "/TuneRawData.csv"
 
     # tuning
-    tuneSetRaw, trainSetRaw = AuxML1.splitDataFrame(features, targets, .2)
+    tuneSetRaw, trainSetRaw = AuxML1.splitDataFrame(features, targets, .2, isReg)
 
     # creates all combinations of our dictionary
     tuneMultiIndex = pd.MultiIndex.from_product(tuningMap.values(), names=tuningMap.keys())
     allTuneParameters = pd.DataFrame(index=tuneMultiIndex).reset_index()
 
-    subsetTuneParameters = allTuneParameters.sample(n=5)
+    subsetTuneParameters = allTuneParameters.sample(n=20)
 
     subsetTuneParameters['AveragePerformance'] = [0] * len(subsetTuneParameters)
     subsetTuneParameters['TestsRun'] = [0] * len(subsetTuneParameters)
 
+    kNearestOutput = pd.DataFrame()
+
     for currentParameter in subsetTuneParameters.index.tolist():
         for loopIndex in range(5):
 
-            trainSet1Raw, trainSet2Raw = AuxML1.splitDataFrame(trainSetRaw, targets, .5)
+            trainSet1Raw, trainSet2Raw = AuxML1.splitDataFrame(trainSetRaw, targets, .5, isReg)
 
             trainSet1 = trainSet1Raw.copy()
             trainSet2 = trainSet2Raw.copy()
@@ -49,6 +63,7 @@ def KNNTuning(dataSetID, features, targets, normalCol, tuningMap, hybridCols, is
 
             kNearestTune = pd.DataFrame({
                 'testID': [],
+                'currentParameterID': [],
                 'nearestNeighbors': [],
                 'expectedValue': [],
                 'actualValue': [],
@@ -74,10 +89,12 @@ def KNNTuning(dataSetID, features, targets, normalCol, tuningMap, hybridCols, is
                                                                             s,
                                                                             isReg)
 
-            subsetTuneParameters.loc[currentParameter, 'AveragePerformance'] += AuxML1.testEffectiveness(kNearestTune, isReg)
             subsetTuneParameters.loc[currentParameter, 'TestsRun'] += 1
-
             subsetTuneParameters.to_csv(tuneFileName, index=True)
+
+            kNearestTune['currentParameterID'] = currentParameter
+            kNearestOutput = pd.concat([kNearestOutput, kNearestTune])
+            kNearestOutput.to_csv(tuneRawFileName, index=True)
 
             print("***Starting Tune " + str(subsetTuneParameters.loc[currentParameter, 'TestsRun']) + " for parameter set " + str(currentParameter) + "***")
             print("***" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "***")
@@ -92,12 +109,16 @@ def KNNTuning(dataSetID, features, targets, normalCol, tuningMap, hybridCols, is
                                                                             s,
                                                                             isReg)
 
-            subsetTuneParameters.loc[currentParameter, 'AveragePerformance'] += AuxML1.testEffectiveness(kNearestTune,isReg)
             subsetTuneParameters.loc[currentParameter, 'TestsRun'] += 1
-
             subsetTuneParameters.to_csv(tuneFileName, index=True)
 
-    subsetTuneParameters['AveragePerformance'] /= 10
+            kNearestTune['currentParameterID'] = currentParameter
+            kNearestOutput = pd.concat([kNearestOutput, kNearestTune])
+            kNearestOutput.to_csv(tuneRawFileName, index=True)
+
+        subsetTuneParameters.loc[currentParameter, 'AveragePerformance'] = AuxML1.testEffectiveness(kNearestOutput[kNearestOutput['currentParameterID'] == currentParameter], isReg)
+        subsetTuneParameters.to_csv(tuneFileName, index=True)
+
     subsetTuneParameters.to_csv(tuneFileName, index=True)
     trainSetRaw.to_csv(testCasesFileName, index=True)
 

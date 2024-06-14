@@ -4,7 +4,7 @@ import AuxML1
 
 def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isReg):
     # create file to store output
-    validationTestFileName = dataSetID + "/CrossValidationTestFile.csv"
+    validationTestFileName = dataSetID + "/CrossValidationTestFile2.csv"
 
     #grab our tuned variables
     tunedK = tuningMap['k'].iloc[0]
@@ -17,8 +17,8 @@ def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isRe
     averageAccuracy = 0
     kNearestOutput = pd.DataFrame()
 
-    for loopIndex in range(5):
-        trainSet1Raw, trainSet2Raw = AuxML1.splitDataFrame(features, targets, .5)
+    for loopIndex in range(2):
+        trainSet1Raw, trainSet2Raw = AuxML1.splitDataFrame(features, targets, .5, isReg)
 
         crossSetTrain1 = trainSet1Raw.copy()
         crossSetTrain2 = trainSet2Raw.copy()
@@ -62,7 +62,6 @@ def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isRe
 
         kNearestTest['testID'] = currentTest
         currentTest += 1
-        averageAccuracy += AuxML1.testEffectiveness(kNearestTest, isReg)
 
         kNearestOutput = pd.concat([kNearestOutput, kNearestTest])
         kNearestOutput.to_csv(validationTestFileName, index=True)
@@ -80,20 +79,22 @@ def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isRe
                                                                         isReg)
 
         kNearestTest['testID'] = currentTest
-        currentTest += 1
-        averageAccuracy += AuxML1.testEffectiveness(kNearestTest, isReg)
 
         kNearestOutput = pd.concat([kNearestOutput, kNearestTest])
         kNearestOutput.to_csv(validationTestFileName, index=True)
 
-    averageAccuracy /= 10
+    averageAccuracy = AuxML1.testEffectiveness(kNearestOutput, isReg)
     print("The average accuracy of this test is: " + str(averageAccuracy))
 
     if isReg:
-        print("The average accuracy of the null model is: " + targets['Class'].mean())
+        nullModel = features.join(targets)
+        nullModel['expectedValue'] = nullModel['Class'].mean()
+        MSE = 1/len(nullModel) * sum((nullModel['Class'] - nullModel['expectedValue'])**2)
+        print("The average accuracy of the null model is: " + str(MSE))
+
     else:
         nullModel = features.join(targets)
-        nullModel['expectedValue'] = targets['Class'].value_counts().idxmax()
+        nullModel['expectedValue'] = nullModel['Class'].value_counts().idxmax()
         nullModel['correctAssignment'] = nullModel['expectedValue'] == nullModel['Class']
 
         print("The average accuracy of the null model is: " + str(nullModel['correctAssignment'].mean()))

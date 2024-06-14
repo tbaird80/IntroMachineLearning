@@ -1,9 +1,15 @@
 from ucimlrepo import fetch_ucirepo
 import numpy as np
 import pandas as pd
-import math
 
 def normalizeNumberValues(testSet, trainSet, colsNormalize):
+    """
+
+    @param testSet:
+    @param trainSet:
+    @param colsNormalize:
+    @return:
+    """
     for currentCol in testSet.columns:
         if currentCol in colsNormalize:
             testSet[currentCol] = (testSet[currentCol] - trainSet[currentCol].mean()) / trainSet[currentCol].std()
@@ -13,6 +19,14 @@ def normalizeNumberValues(testSet, trainSet, colsNormalize):
 
 
 def hybridDistance(x, y, p, hybrid):
+    """
+
+    @param x:
+    @param y:
+    @param p:
+    @param hybrid:
+    @return:
+    """
     if hybrid:
         distance = 0
         for index, value in x.items():
@@ -36,6 +50,19 @@ def hybridDistance(x, y, p, hybrid):
 
 
 def kNearestNeighbor(targetRow, trainingData, validationSet, k, p, hybrid, error, kernel, isReg):
+    """
+
+    @param targetRow:
+    @param trainingData:
+    @param validationSet:
+    @param k:
+    @param p:
+    @param hybrid:
+    @param error:
+    @param kernel:
+    @param isReg:
+    @return:
+    """
     # create our distance data frame to track all values
     distanceTable = pd.DataFrame({'distance': []})
 
@@ -52,9 +79,16 @@ def kNearestNeighbor(targetRow, trainingData, validationSet, k, p, hybrid, error
     kNearestTable = distanceTable.nsmallest(k, 'distance')
     kNearestTable = kNearestTable.join(validationSet)
 
-    # find the class that is the most common occurance
+    # find the class that is the most common occurrence
     if isReg:
-        estimate = math.exp(kernel * (sum(kNearestTable['Class'] * kNearestTable['distance']) / sum(kNearestTable['distance'])))
+        relevantTargets = validationSet.loc[trainingData.index.tolist()]
+        if len(relevantTargets['Class'].unique()) == 1:
+            estimate = relevantTargets['Class'].unique()[0]
+        else:
+            testSetStd = relevantTargets['Class'].std()
+            kNearestTable['kernelEstimate'] = np.exp((1/(kernel * testSetStd) * kNearestTable['distance']))
+            kNearestTable['weightedEstimate'] = kNearestTable['kernelEstimate'] * kNearestTable['Class']
+            estimate = sum(kNearestTable['weightedEstimate']) / sum(kNearestTable['kernelEstimate'])
     else:
         estimate = kNearestTable['Class'].value_counts().idxmax()
 
@@ -75,6 +109,18 @@ def kNearestNeighbor(targetRow, trainingData, validationSet, k, p, hybrid, error
 
 
 def condensedNearestNeighbor(originalDataSet, validationSet, k, p, hybrid, error, kernel, isReg):
+    """
+
+    @param originalDataSet:
+    @param validationSet:
+    @param k:
+    @param p:
+    @param hybrid:
+    @param error:
+    @param kernel:
+    @param isReg:
+    @return:
+    """
     condensedSet = originalDataSet.sample()
     originalDataSet = originalDataSet.drop(condensedSet.index.tolist(), axis='index')
     condensedSetSize = len(condensedSet)
@@ -92,21 +138,44 @@ def condensedNearestNeighbor(originalDataSet, validationSet, k, p, hybrid, error
     return condensedSet
 
 
-def splitDataFrame(features, classes, splitPercentage):
+def splitDataFrame(features, classes, splitPercentage, isReg):
+    """
+
+    @param features:
+    @param classes:
+    @param splitPercentage:
+    @param isReg
+    @return:
+    """
+
     classes = classes.loc[features.index.tolist()]
 
-    uniqueClassValues = (classes['Class'].unique().tolist())
     set1Classes = pd.DataFrame()
     set2Classes = pd.DataFrame()
 
-    for nextClass in uniqueClassValues:
-        subsetTable = classes[classes['Class'] == nextClass]
+    if isReg:
+        subsetTable = classes.copy()
         subsetSize = round(len(subsetTable) * splitPercentage)
+
         set1Subset = subsetTable.sample(n=subsetSize)
         set1Classes = pd.concat([set1Classes, set1Subset])
+
         set2Indices = subsetTable.index.difference(set1Classes.index)
         set2Subset = subsetTable.loc[set2Indices]
         set2Classes = pd.concat([set2Classes, set2Subset])
+    else:
+        uniqueClassValues = (classes['Class'].unique().tolist())
+
+        for nextClass in uniqueClassValues:
+            subsetTable = classes[classes['Class'] == nextClass]
+            subsetSize = round(len(subsetTable) * splitPercentage)
+
+            set1Subset = subsetTable.sample(n=subsetSize)
+            set1Classes = pd.concat([set1Classes, set1Subset])
+
+            set2Indices = subsetTable.index.difference(set1Classes.index)
+            set2Subset = subsetTable.loc[set2Indices]
+            set2Classes = pd.concat([set2Classes, set2Subset])
 
     set1 = features.loc[set1Classes.index.tolist()]
     set2 = features.loc[set2Classes.index.tolist()]
@@ -114,7 +183,13 @@ def splitDataFrame(features, classes, splitPercentage):
     return set1, set2
 
 def testEffectiveness(knnOutput, isReg):
+    """
+
+    @param knnOutput:
+    @param isReg:
+    @return:
+    """
     if isReg:
-        return (1/len(knnOutput)) * sum((knnOutput['actualValue'] - knnOutput['expectedValue'])**2)
+        return np.mean((knnOutput['actualValue'] - knnOutput['expectedValue'])**2)
     else:
         return knnOutput['correctAssignment'].mean()

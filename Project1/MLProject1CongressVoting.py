@@ -6,6 +6,7 @@ import os
 import pandas as pd
 
 if __name__ == '__main__':
+
     # function inputs
     # data set title
     dataTitle = 'CongressVoting'

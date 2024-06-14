@@ -3,6 +3,11 @@ import pandas as pd
 import os
 
 def dataSourcing(dataName):
+    """
+
+    @param dataName:
+    @return:
+    """
 
     featurePath = dataName + "/featureData.csv"
     targetPath = dataName + "/targetData.csv"
@@ -10,7 +15,7 @@ def dataSourcing(dataName):
     if dataName == 'BreastCancer':
         # check if file path exists, read from file if so, otherwise grab from online repo
         if os.path.exists(featurePath) & os.path.exists(targetPath):
-            print(dataName + "data exists, reading from csv")
+            print(dataName + " data exists, reading from csv")
 
             # read from local directory
             dataFeatures = pd.read_csv(featurePath, index_col=0)
@@ -51,14 +56,14 @@ def dataSourcing(dataName):
     elif dataName == 'CarEval':
         # check if file path exists, read from file if so, otherwise grab from online repo
         if os.path.exists(featurePath) & os.path.exists(targetPath):
-            print(dataName + "data exists, reading from csv")
+            print(dataName + " data exists, reading from csv")
 
             # read from local directory
             dataFeatures = pd.read_csv(featurePath, index_col=0)
             dataTargets = pd.read_csv(targetPath, index_col=0)
 
         else:
-            print(dataName + "data does not exist, reading from source")
+            print(dataName + " data does not exist, reading from source")
 
             # fetch dataset
             car_evaluation = fetch_ucirepo(id=19)
@@ -80,14 +85,14 @@ def dataSourcing(dataName):
     elif dataName == 'CongressVoting':
         # check if file path exists, read from file if so, otherwise grab from online repo
         if os.path.exists(featurePath) & os.path.exists(targetPath):
-            print(dataName + "data exists, reading from csv")
+            print(dataName + " data exists, reading from csv")
 
             # read from local directory
             dataFeatures = pd.read_csv(featurePath, index_col=0)
             dataTargets = pd.read_csv(targetPath, index_col=0)
 
         else:
-            print(dataName + "data does not exist, reading from source")
+            print(dataName + " data does not exist, reading from source")
 
             # fetch dataset
             congressional_voting_records = fetch_ucirepo(id=105)
@@ -131,14 +136,14 @@ def dataSourcing(dataName):
     elif dataName == 'Abalone':
         # check if file path exists, read from file if so, otherwise grab from online repo
         if os.path.exists(featurePath) & os.path.exists(targetPath):
-            print(dataName + "data exists, reading from csv")
+            print(dataName + " data exists, reading from csv")
 
             # read from local directory
             dataFeatures = pd.read_csv(featurePath, index_col=0)
             dataTargets = pd.read_csv(targetPath, index_col=0)
 
         else:
-            print(dataName + "data does not exist, reading from source")
+            print(dataName + " data does not exist, reading from source")
 
             # fetch dataset
             abalone = fetch_ucirepo(id=1)

@@ -8,7 +8,7 @@ if __name__ == '__main__':
     # define the columns that need to be normalized
     normalCol = ['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']
     # define the features to be tuned
-    tuningMap = {'p': [1, 2], 'k': [2, 3, 4, 5], 'e': [1], 'l': [1]}
+    tuningMap = {'p': [1, 2], 'k': [2, 3, 4, 5], 'e': [1], 's': [1]}
     # define whether there are hybrid columns in that there are multiple data types to worry about
     hybridCols = True
     # define whether it is a regression
