@@ -1,3 +1,4 @@
+import numpy as np
 from ucimlrepo import fetch_ucirepo
 import pandas as pd
 import os
@@ -287,6 +288,7 @@ def dataSourcing(dataName):
         # set the name of the target column
         dataTargets = dataTargets.loc[dataFeatures.index.tolist()]
         dataTargets.columns = ['Class']
+        dataTargets.loc[:, 'Class'] = np.log1p(dataTargets['Class'])
 
     return dataFeatures, dataTargets
 

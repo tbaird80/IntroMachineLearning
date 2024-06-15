@@ -14,7 +14,6 @@ def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isRe
 
     #test
     currentTest = 1
-    averageAccuracy = 0
     kNearestOutput = pd.DataFrame()
 
     for loopIndex in range(2):
@@ -28,7 +27,7 @@ def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isRe
         crossSetTrain1 = AuxML1.normalizeNumberValues(crossSetTrain1, trainSet1Raw, normalCol)
         crossSetTrain2 = AuxML1.normalizeNumberValues(crossSetTrain2, trainSet2Raw, normalCol)
 
-        #normalize using their respective train set
+        # normalize using their respective train set
         crossSetTest1 = AuxML1.normalizeNumberValues(crossSetTest1, trainSet2Raw, normalCol)
         crossSetTest2 = AuxML1.normalizeNumberValues(crossSetTest2, trainSet1Raw, normalCol)
 
@@ -61,10 +60,12 @@ def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isRe
                                                                         isReg)
 
         kNearestTest['testID'] = currentTest
-        currentTest += 1
 
         kNearestOutput = pd.concat([kNearestOutput, kNearestTest])
         kNearestOutput.to_csv(validationTestFileName, index=True)
+
+        # reset our table once tracked above before moving to the next index
+        kNearestTest = kNearestTest.drop(kNearestTest.index.to_list())
 
         print("***Testing Set 2 Against Condensed Set 1 " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "***")
         for currentTestRow2 in crossSetTest2.index.tolist():
@@ -79,6 +80,7 @@ def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isRe
                                                                         isReg)
 
         kNearestTest['testID'] = currentTest
+        currentTest += 1
 
         kNearestOutput = pd.concat([kNearestOutput, kNearestTest])
         kNearestOutput.to_csv(validationTestFileName, index=True)
