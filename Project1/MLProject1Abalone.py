@@ -6,6 +6,13 @@ import os
 import pandas as pd
 
 if __name__ == '__main__':
+    '''
+    This is our main function for the Abalone test set. It will define, tune, and test the set to return an effectiveness
+    value for the k nearest neighbor algorithm. If you would like to run yourself, I would recommend doing so in chunks. Tune first,
+    then test.
+    
+    '''
+
     # function inputs
     # data set title
     dataTitle = 'Abalone'
@@ -44,21 +51,25 @@ if __name__ == '__main__':
     print(tuneParameterOutput.nsmallest(1, 'AveragePerformance'))
 
     # # ----------------------Testing-----------------------------
-    # # source our data
-    # uniqueTestID = dataTitle + '/14.06.2024_08.51.12'
-    #
-    # #read in our files from tuning
-    # tunedParametersFile = uniqueTestID + "/ParameterTuningFile.csv"
-    # tuningTestSet = uniqueTestID + "/TestSetRecord.csv"
-    # tuneParameterOutput = pd.read_csv(tunedParametersFile, index_col=0)
-    # tuneTestFeatures = pd.read_csv(tuningTestSet, index_col=0)
-    #
-    # maxTune = tuneParameterOutput.nsmallest(1, 'AveragePerformance')
-    # testFeatures = features.loc[tuneTestFeatures.index.tolist()]
-    #
-    # # shrink test set for testing
-    # # testSize = round(len(features) * .8)
-    # # testFeatures = testFeatures.sample(n=testSize)
-    # # targets = targets.loc[testFeatures.index.tolist()]
-    #
-    # KNNTestML1.KNNTest(uniqueTestID, testFeatures, targets, normalCol, maxTune, hybridCols, regression)
+    # source our data
+    uniqueTestID = dataTitle + '/14.06.2024_06.54.25'
+
+    # read in our files from tuning
+    tunedParametersFile = uniqueTestID + "/ParameterTuningFile.csv"
+    tuningRawDataFile = uniqueTestID + "/TuneRawData.csv"
+    tuneParameterOutput = pd.read_csv(tunedParametersFile, index_col=0)
+    tuneFeatures = pd.read_csv(tuningRawDataFile, index_col=0)
+
+    # in this test, we only had time to run one tuning given the length to run. therefore we took largest to get the one that finished
+    maxTune = tuneParameterOutput.nlargest(1, 'AveragePerformance')
+    # grab the same test cases as defined as the 80% used for tuning
+    testFeaturesIndices = features.index.difference(tuneFeatures.index)
+    testFeatures = features.loc[testFeaturesIndices]
+
+    # shrink test set for testing
+    # testSize = round(len(features) * .8)
+    # testFeatures = testFeatures.sample(n=testSize)
+    # targets = targets.loc[testFeatures.index.tolist()]
+
+    # run the test given best hyperparameters
+    KNNTestML1.KNNTest(uniqueTestID, testFeatures, targets, normalCol, maxTune, hybridCols, regression)

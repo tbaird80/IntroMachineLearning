@@ -4,7 +4,7 @@ import AuxML1
 
 def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isReg):
     # create file to store output
-    validationTestFileName = dataSetID + "/CrossValidationTestFile2.csv"
+    validationTestFileName = dataSetID + "/CrossValidationTestFile.csv"
 
     #grab our tuned variables
     tunedK = tuningMap['k'].iloc[0]
@@ -16,7 +16,7 @@ def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isRe
     currentTest = 1
     kNearestOutput = pd.DataFrame()
 
-    for loopIndex in range(2):
+    for loopIndex in range(5):
         trainSet1Raw, trainSet2Raw = AuxML1.splitDataFrame(features, targets, .5, isReg)
 
         crossSetTrain1 = trainSet1Raw.copy()
@@ -59,8 +59,9 @@ def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isRe
                                                                         tunedS,
                                                                         isReg)
 
-        kNearestTest['testID'] = currentTest
 
+        # update test ID and add our output to our logs
+        kNearestTest['testID'] = currentTest
         kNearestOutput = pd.concat([kNearestOutput, kNearestTest])
         kNearestOutput.to_csv(validationTestFileName, index=True)
 
@@ -79,15 +80,19 @@ def KNNTest(dataSetID, features, targets, normalCol, tuningMap, hybridCols, isRe
                                                                         tunedS,
                                                                         isReg)
 
+        # update test ID and add our output to our logs
         kNearestTest['testID'] = currentTest
-        currentTest += 1
-
         kNearestOutput = pd.concat([kNearestOutput, kNearestTest])
         kNearestOutput.to_csv(validationTestFileName, index=True)
 
+        # increment our test case
+        currentTest += 1
+
+    # find the average accuracy of the set of tests and print to console
     averageAccuracy = AuxML1.testEffectiveness(kNearestOutput, isReg)
     print("The average accuracy of this test is: " + str(averageAccuracy))
 
+    #print out our null test result as a as a
     if isReg:
         nullModel = features.join(targets)
         nullModel['expectedValue'] = nullModel['Class'].mean()

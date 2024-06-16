@@ -6,6 +6,12 @@ import os
 import pandas as pd
 
 if __name__ == '__main__':
+    '''
+    This is our main function for the Breast Cancer test set. It will define, tune, and test the set to return an effectiveness
+    value for the k nearest neighbor algorithm. If you would like to run yourself, I would recommend doing so in chunks. Tune first,
+    then test.
+
+    '''
     # function inputs
     # data set title
     dataTitle = 'BreastCancer'
@@ -43,20 +49,23 @@ if __name__ == '__main__':
 
     # ----------------------Testing-----------------------------
     #source our data
-    # uniqueTestID = dataTitle + '/'
-    #
-    # #read in our files from tuning
-    # tunedParametersFile = uniqueTestID + "/ParameterTuningFile.csv"
-    # tuningTestSet = uniqueTestID + "/TestSetRecord.csv"
-    # tuneParameterOutput = pd.read_csv(tunedParametersFile, index_col=0)
-    # tuneTestFeatures = pd.read_csv(tuningTestSet, index_col=0)
-    #
-    # maxTune = tuneParameterOutput.nlargest(1, 'AveragePerformance')
-    # testFeatures = features.loc[tuneTestFeatures.index.tolist()]
-    #
-    # # shrink test set for testing
-    # # testSize = round(len(testFeatures) * .1)
-    # # testFeatures = testFeatures.sample(n=testSize)
-    # # targets = targets.loc[testFeatures.index.tolist()]
-    #
-    # KNNTestML1.KNNTest(uniqueTestID, testFeatures, targets, normalCol, maxTune, hybridCols, regression)
+    uniqueTestID = dataTitle + '/'
+
+    #read in our files from tuning
+    tunedParametersFile = uniqueTestID + "/ParameterTuningFile.csv"
+    tuningTestSet = uniqueTestID + "/TestSetRecord.csv"
+    tuneParameterOutput = pd.read_csv(tunedParametersFile, index_col=0)
+    tuneTestFeatures = pd.read_csv(tuningTestSet, index_col=0)
+
+    # grab the best performing hyperparameters. This is a classification, so it is the largest % accuracy
+    maxTune = tuneParameterOutput.nlargest(1, 'AveragePerformance')
+    # grab the same test cases as defined as the 80% used for tuning
+    testFeatures = features.loc[tuneTestFeatures.index.tolist()]
+
+    # shrink test set for testing
+    # testSize = round(len(testFeatures) * .1)
+    # testFeatures = testFeatures.sample(n=testSize)
+    # targets = targets.loc[testFeatures.index.tolist()]
+
+    # run the test given best hyperparameters
+    KNNTestML1.KNNTest(uniqueTestID, testFeatures, targets, normalCol, maxTune, hybridCols, regression)
