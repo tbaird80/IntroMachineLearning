@@ -39,9 +39,9 @@ if __name__ == '__main__':
     os.makedirs(uniqueTestID)
 
     # shrink test set for testing
-    testSize = round(len(features) * .1)
-    features = features.sample(n=testSize)
-    targets = targets.loc[features.index.tolist()]
+    # testSize = round(len(features) * .1)
+    # features = features.sample(n=testSize)
+    # targets = targets.loc[features.index.tolist()]
 
     # tune our parameters
     tuneParameterOutput, testFeatures = KNNTuningML1.KNNTuning(uniqueTestID, features, targets, normalCol, tuningMap, hybridCols, regression)
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     # ----------------------Testing-----------------------------
     #source our data
-    uniqueTestID = dataTitle + '/'
+    uniqueTestID = dataTitle + '/11.06.2024_10.37.05'
 
     #read in our files from tuning
     tunedParametersFile = uniqueTestID + "/ParameterTuningFile.csv"

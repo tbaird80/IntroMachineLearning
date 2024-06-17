@@ -31,21 +31,21 @@ if __name__ == '__main__':
     # define whether it is a regression
     regression = False
 
-    # ----------------------Tuning-----------------------------
-    # Get the current timestamp and create our own unique new directory
-    currentTimestamp = datetime.now()
-    timestampStr = currentTimestamp.strftime("%d.%m.%Y_%I.%M.%S")
-    uniqueTestID = dataTitle + "/" + timestampStr
-    os.makedirs(uniqueTestID)
-
-    # # shrink test set for testing
-    # testSize = round(len(features) * .05)
-    # features = features.sample(n=testSize)
-    # targets = targets.loc[features.index.tolist()]
-
-    # tune our parameters
-    tuneParameterOutput, testFeatures = KNNTuningML1.KNNTuning(uniqueTestID, features, targets, normalCol, tuningMap, hybridCols, regression)
-    print(tuneParameterOutput.nlargest(1, 'AveragePerformance'))
+    # # ----------------------Tuning-----------------------------
+    # # Get the current timestamp and create our own unique new directory
+    # currentTimestamp = datetime.now()
+    # timestampStr = currentTimestamp.strftime("%d.%m.%Y_%I.%M.%S")
+    # uniqueTestID = dataTitle + "/" + timestampStr
+    # os.makedirs(uniqueTestID)
+    #
+    # # # shrink test set for testing
+    # # testSize = round(len(features) * .05)
+    # # features = features.sample(n=testSize)
+    # # targets = targets.loc[features.index.tolist()]
+    #
+    # # tune our parameters
+    # tuneParameterOutput, testFeatures = KNNTuningML1.KNNTuning(uniqueTestID, features, targets, normalCol, tuningMap, hybridCols, regression)
+    # print(tuneParameterOutput.nlargest(1, 'AveragePerformance'))
 
     # ----------------------Testing-----------------------------
     # source our data
