@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     # define the features to be tuned
     featuresMap = {
-        'Sex': 'Guess',
+        'Sex': 'Cat',
         'Length': 'Num',
         'Diameter': 'Num',
         'Height': 'Num',

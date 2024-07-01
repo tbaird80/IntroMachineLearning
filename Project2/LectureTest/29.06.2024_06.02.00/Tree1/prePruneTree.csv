@@ -1,0 +1,9 @@
+,nodeID,parentNode,dataSetFilters,evaluated,nodeFeature,nodePrediction,childrenNodes,gainOrMSE,treeLevel,pruned,isLeaf
+0,0,-1,{},True,Outlook,P,"{'Sunny': 2, 'Overcast': 3, 'Rainy': 4}",0.1564265693094899,0,False,False
+1,1,0,{'Outlook': 'Sunny'},True,Humidity,N,"{'High': 5, 'Normal': 6}",0.9999912563832019,1,False,False
+2,2,0,{'Outlook': 'Overcast'},True,,P,{},0.0,1,False,True
+3,3,0,{'Outlook': 'Rainy'},True,Wind,P,"{False: 7, True: 8}",0.9999912563832019,1,False,False
+4,4,1,"{'Outlook': 'Sunny', 'Humidity': 'High'}",True,,N,{},0.0,2,False,True
+5,5,1,"{'Outlook': 'Sunny', 'Humidity': 'Normal'}",True,,P,{},0.0,2,False,True
+6,6,3,"{'Outlook': 'Rainy', 'Wind': False}",True,,P,{},0.0,2,False,True
+7,7,3,"{'Outlook': 'Rainy', 'Wind': True}",True,,N,{},0.0,2,False,True

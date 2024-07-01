@@ -1,0 +1,25 @@
+#Finish gain ratio
+#calc VI
+#Update values for continuous features to be greater than or less than mean of train set feature
+#Create min of MSE function
+#Create path choice for traversal of test set
+#Create loop to continue adding until all either leaf or have children nodes
+Create prune function to cut off leaves with smallest MSE or gain ratio
+Create print tree function
+
+
+newRow = {
+            'nodeID': nodeID,
+            'nodeFeature': nextVariable,
+            'nodePrediction': ,
+            'isLeaf': 0,
+            'parentNode': ,
+            'childrenNodes': ,
+            'decisionType': ,
+            'dataSubsetDict': dataSubsetDict,
+            'featuresToConsider': ,
+            'MSE': ,
+            'GainRatio': nextGainRatio,
+            'pruned': False,
+            'treeLevel': ,
+        }

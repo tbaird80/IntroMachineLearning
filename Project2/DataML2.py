@@ -219,7 +219,7 @@ def dataSourcing(dataName):
             dataFeatures.to_csv(featurePath, index=True)
             dataTargets.to_csv(targetPath, index=True)
 
-        # normalize the rest
+        # assign types to all columns
         dataFeatures.loc[:, 'Sex'] = dataFeatures['Sex'].astype(str)
         dataFeatures.loc[:, 'Length'] = dataFeatures['Length'].astype(float)
         dataFeatures.loc[:, 'Diameter'] = dataFeatures['Diameter'].astype(float)

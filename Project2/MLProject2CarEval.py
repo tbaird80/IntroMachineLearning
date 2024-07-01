@@ -2,6 +2,8 @@ import DataML2
 from datetime import datetime
 import os
 import pandas as pd
+import AuxML2 as aux
+import TreeClass
 
 if __name__ == '__main__':
     '''
@@ -37,6 +39,13 @@ if __name__ == '__main__':
     timestampStr = currentTimestamp.strftime("%d.%m.%Y_%I.%M.%S")
     uniqueTestID = dataTitle + "/" + timestampStr
     os.makedirs(uniqueTestID)
+
+    pruneSet, crossValidationSet = aux.splitDataFrame(dataSet=dataSet, splitPercentage=.2, isReg=regression)
+    trainSet, testSet = aux.splitDataFrame(dataSet=crossValidationSet, splitPercentage=.5, isReg=regression)
+
+    unprundedTree = TreeClass.Tree(dataName=dataTitle, isRegression=regression, featuresMap=featuresMap, dataSet=trainSet)
+
+
 
     # -----------------------Prune Tree------------------------------
 

@@ -22,8 +22,8 @@ if __name__ == '__main__':
     featuresMap = {
         'X': 'Num',
         'Y': 'Num',
-        'month': 'Num',
-        'day': 'Num',
+        'month': 'Cat',
+        'day': 'Cat',
         'FFMC': 'Num',
         'DMC': 'Num',
         'DC': 'Num',

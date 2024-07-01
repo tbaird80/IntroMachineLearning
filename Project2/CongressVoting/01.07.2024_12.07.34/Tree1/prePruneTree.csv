@@ -1,0 +1,24 @@
+,nodeID,parentNode,dataSetFilters,evaluated,nodeFeature,nodePrediction,childrenNodes,gainOrMSE,treeLevel,pruned,isLeaf
+0,0,-1,{},True,physician-fee-freeze,democrat,"{1: 1, -1: 2, 0: 3}",0.659744046333821,0,False,False
+1,1,0,{'physician-fee-freeze': 1},True,synfuels-corporation-cutback,republican,"{-1: 4, 1: 5, 0: 6}",0.13945379517815082,1,False,False
+2,2,0,{'physician-fee-freeze': -1},True,adoption-of-the-budget-resolution,democrat,"{-1: 7, 1: 8, 0: 9}",0.09628570888899599,1,False,False
+3,3,0,{'physician-fee-freeze': 0},True,synfuels-corporation-cutback,democrat,"{0: 10, 1: 11}",0.9999928523369063,1,False,False
+4,4,1,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1}",True,,republican,{},0.0,2,False,True
+5,5,1,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1}",True,education-spending,republican,"{1: 12, -1: 13}",0.5171027915703436,2,False,False
+6,6,1,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 0}",True,,republican,{},0.0,2,False,True
+7,7,2,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1}",True,education-spending,democrat,"{-1: 14, 0: 15, 1: 16}",0.294229637578271,2,False,False
+8,8,2,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': 1}",True,,democrat,{},0.0,2,False,True
+9,9,2,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': 0}",True,,democrat,{},0.0,2,False,True
+10,10,3,"{'physician-fee-freeze': 0, 'synfuels-corporation-cutback': 0}",True,,republican,{},0.0,2,False,True
+11,11,3,"{'physician-fee-freeze': 0, 'synfuels-corporation-cutback': 1}",True,,democrat,{},0.0,2,False,True
+12,12,5,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'education-spending': 1}",True,immigration,republican,"{1: 17, -1: 18}",0.9999891836897137,3,False,False
+13,13,5,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'education-spending': -1}",True,,democrat,{},0.0,3,False,True
+14,14,7,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': -1}",True,aid-to-nicaraguan-contras,democrat,"{1: 19, -1: 20}",0.31127289156699045,3,False,False
+15,15,7,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': 0}",True,,republican,{},0.0,3,False,True
+16,16,7,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': 1}",True,,democrat,{},0.0,3,False,True
+17,17,12,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'education-spending': 1, 'immigration': 1}",True,,republican,{},0.0,4,False,True
+18,18,12,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'education-spending': 1, 'immigration': -1}",True,,democrat,{},0.0,4,False,True
+19,19,14,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': -1, 'aid-to-nicaraguan-contras': 1}",True,crime,republican,"{1: 21, -1: 22}",0.9999800684314307,4,False,False
+20,20,14,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': -1, 'aid-to-nicaraguan-contras': -1}",True,,democrat,{},0.0,4,False,True
+21,21,19,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': -1, 'aid-to-nicaraguan-contras': 1, 'crime': 1}",True,,republican,{},0.0,5,False,True
+22,22,19,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': -1, 'aid-to-nicaraguan-contras': 1, 'crime': -1}",True,,democrat,{},0.0,5,False,True
