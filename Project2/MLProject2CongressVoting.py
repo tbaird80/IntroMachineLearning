@@ -45,32 +45,11 @@ if __name__ == '__main__':
 
     # ----------------------Create Tree-----------------------------
     # Get the current timestamp and create our own unique new directory
-    currentTimestamp = datetime.now()
-    timestampStr = currentTimestamp.strftime("%d.%m.%Y_%I.%M.%S")
-    uniqueTestID = dataTitle + "/" + timestampStr
-    os.makedirs(uniqueTestID)
-
-    for currentTreeID in range(1, 11):
-        currentTreeData = uniqueTestID + "/Tree" + str(currentTreeID)
-        os.makedirs(currentTreeData)
-
-        pruneSet, crossValidationSet = aux.splitDataFrame(dataSet=dataSet, splitPercentage=.2, isReg=regression)
-        trainSet, testSet = aux.splitDataFrame(dataSet=crossValidationSet, splitPercentage=.5, isReg=regression)
-
-        prePruneTree = TreeClass.Tree(dataName=dataTitle, isRegression=regression, featuresMap=featuresMap, dataSet=trainSet)
-
-        treeFileName = currentTreeData + "/prePruneTree.csv"
-        trainDataFileName = currentTreeData + "/trainData.csv"
-        testDataFileName = currentTreeData + "/testData.csv"
-        pruneDataFileName = currentTreeData + "/pruneData.csv"
-
-        prePruneTree.treeTable.to_csv(treeFileName, index=True)
-        trainSet.to_csv(trainDataFileName, index=True)
-        testSet.to_csv(testDataFileName, index=True)
-        pruneSet.to_csv(pruneDataFileName, index=True)
+    testFolder = aux.createTrees(dataTitle=dataTitle, dataSet=dataSet, featuresMap=featuresMap, isReg=regression)
 
     # ------------------------Reset current test Folder----------------
-    currentTestFolder = dataTitle + "/01.07.2024_12.07.34"
+    currentTestDir = testFolder
+    # currentTestFolder = dataTitle + "/01.07.2024_12.07.34"
 
     # -----------------------Prune Tree------------------------------
     for currentTreeID in range(1, 11):

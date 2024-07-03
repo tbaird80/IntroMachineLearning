@@ -1,8 +1,132 @@
 import pandas as pd
 import numpy as np
 import copy
-import random
 import TreeClass
+import os
+from datetime import datetime
+
+def runTreeCreation(dataTitle, dataSet, featuresMap, isReg):
+
+    # create directory based on current data set and timestamp
+    currentTimestamp = datetime.now()
+    timestampStr = currentTimestamp.strftime("%d.%m.%Y_%I.%M.%S")
+    uniqueTestDir = dataTitle + "/" + timestampStr
+    os.makedirs(uniqueTestDir)
+
+    # init tree ID as we iterate through tree creation
+    currentTreeID = 1
+
+    # cycle through all 10 trees to be created, will increment 2 at a time
+    while currentTreeID <= 10:
+        # create 2 tree directories
+        tree1DataDirectory = uniqueTestDir + "/Tree" + str(currentTreeID)
+        tree2DataDirectory = uniqueTestDir + "/Tree" + str(currentTreeID + 1)
+        os.makedirs(tree1DataDirectory)
+        os.makedirs(tree2DataDirectory)
+
+        # split our data set into 20% pruning data, 40% train1/test2, 40% train2/test1 (train or test depending on the index
+        pruneSet, crossValidationSet = splitDataFrame(dataSet=dataSet, splitPercentage=.2, isReg=isReg)
+        trainSet1, trainSet2 = splitDataFrame(dataSet=crossValidationSet, splitPercentage=.5, isReg=isReg)
+
+        # create tree 1 of current iteration
+        prePruneTree1 = TreeClass.Tree(dataName=dataTitle, isRegression=isReg, featuresMap=featuresMap, dataSet=trainSet1)
+
+        # write our tree data and the relevant training/test/prune data to the directory
+        treeFileName = tree1DataDirectory + "/prePruneTree.csv"
+        prePruneTree1.treeTable.to_csv(treeFileName, index=True)
+        trainDataFileName = tree1DataDirectory + "/trainData.csv"
+        trainSet1.to_csv(trainDataFileName, index=True)
+        testDataFileName = tree1DataDirectory + "/testData.csv"
+        trainSet2.to_csv(testDataFileName, index=True)
+        pruneDataFileName = tree1DataDirectory + "/pruneData.csv"
+        pruneSet.to_csv(pruneDataFileName, index=True)
+
+        # create tree 2 of current iteration
+        prePruneTree2 = TreeClass.Tree(dataName=dataTitle, isRegression=isReg, featuresMap=featuresMap, dataSet=trainSet2)
+
+        # write our tree data and the relevant training/test/prune data to the directory
+        treeFileName = tree2DataDirectory + "/prePruneTree.csv"
+        prePruneTree2.treeTable.to_csv(treeFileName, index=True)
+        trainDataFileName = tree2DataDirectory + "/trainData.csv"
+        trainSet2.to_csv(trainDataFileName, index=True)
+        testDataFileName = tree2DataDirectory + "/testData.csv"
+        trainSet1.to_csv(testDataFileName, index=True)
+        pruneDataFileName = tree2DataDirectory + "/pruneData.csv"
+        pruneSet.to_csv(pruneDataFileName, index=True)
+
+        # increment our tree ID by 2
+        currentTreeID += 2
+
+    # print success message and return directory for full STP where possible
+    print("Trees created at: " + uniqueTestDir)
+    return uniqueTestDir
+
+def runTreePruning(dataTitle, featuresMap, isReg, currentDir):
+
+    # iterate through all 10 trees created
+    for currentTreeID in range(1, 11):
+        # find next tree folder
+        currentTreeFolder = currentDir + "/Tree" + str(currentTreeID)
+
+        # grab relevant data to restore tree
+        treeTable = pd.read_csv(currentTreeFolder + "/prePruneTree.csv")
+        trainSet = pd.read_csv(currentTreeFolder + "/trainData.csv")
+        pruneSet = pd.read_csv(currentTreeFolder + "/pruneData.csv")
+
+        # restore and prune tree
+        prunedTree = TreeClass.Tree(dataName=dataTitle, isRegression=isReg, featuresMap=featuresMap, dataSet=trainSet, existingTree=treeTable)
+        newPrunedTree = pruneTree(prunedTree=prunedTree, pruneSet=pruneSet)
+
+        # store pruned tree down
+        prunedTreeFileName = currentTreeFolder + "/postPruneTree.csv"
+        newPrunedTree.treeTable.to_csv(prunedTreeFileName, index=True)
+
+    # print success message
+    print("Trees pruned at: " + currentDir)
+
+def runTreeTests(dataTitle, featuresMap, isReg, currentDir, isPrune):
+
+    # init our test results output
+    fullTestResults = pd.DataFrame()
+
+    # iterate through all 10 trees
+    for currentTreeID in range(1, 11):
+
+        # grab current tree folder
+        currentTreeFolder = currentDir + "/Tree" + str(currentTreeID)
+
+        # grab train and test data
+        trainSet = pd.read_csv(currentTreeFolder + "/trainData.csv", index_col=0)
+        testSet = pd.read_csv(currentTreeFolder + "/testData.csv", index_col=0)
+
+        # grab the tree needed, whether we are looking at prune tree or full tree
+        if isPrune:
+            treeTable = pd.read_csv(currentTreeFolder + "/postPruneTree.csv", index_col=0)
+            currentTestResultsFile = currentDir + "/TestResults/postPrunedTreeResults.csv"
+        else:
+            treeTable = pd.read_csv(currentTreeFolder + "/prePruneTree.csv", index_col=0)
+            currentTestResultsFile = currentDir + "/TestResults/prePrunedTreeResults.csv"
+
+        # restore the tree and test it
+        currentTree = TreeClass.Tree(dataName=dataTitle, isRegression=isReg, featuresMap=featuresMap, dataSet=trainSet, existingTree=treeTable)
+        testResult = testTree(currentTree=currentTree, testSet=testSet)
+
+        # add tree ID to results
+        testResult['treeID'] = currentTreeID
+
+        # add most recent test to output and print to file
+        fullTestResults = pd.concat([fullTestResults, testResult])
+        fullTestResults.to_csv(currentTestResultsFile, index=True)
+
+    # update output message depending on the pruned nature of the tree
+    if isPrune:
+        outputMessage = "Full success rate of pruned trees: "
+    else:
+        outputMessage = "Full success rate of pre-pruned trees: "
+
+    # output the success message with metrics
+    print(outputMessage + fullTestResults['success'].mean())
+    print(fullTestResults[['treeID', 'success']].groupby(['treeID'], as_index=False).mean('success'))
 
 def splitDataFrame(dataSet, splitPercentage, isReg):
     """
@@ -54,13 +178,11 @@ def splitDataFrame(dataSet, splitPercentage, isReg):
 
     return set1, set2
 
-
 def testTree(currentTree, testSet):
     """
     This function will help a test record traverse a tree until it provides a prediction.
 
     @param currentTree: the tree to traverse for prediction
-    @param testRecord: the record for which we will find the prediction for
     @return: the node that it reached
     """
 
@@ -165,7 +287,7 @@ def findNextNode(currentTree, currentNodeID, testRecord):
             # for voting or sex, we pick a random value as "closest"
             if currentFeature == 'Sex' or currentTree.dataSetName == 'CongressVoting':
                 branchToTake = np.random.choice(np.array(list(currentChildren.keys())), size=1)[0]
-            # other categorical have some ordinal qualities, so we can find a closest
+            # other categorical have some ordinal qualities, so we can find the closest
             else:
                 branchToTake = findClosestCat(currentFeature, testFeatureAttribute, currentChildren)
 
