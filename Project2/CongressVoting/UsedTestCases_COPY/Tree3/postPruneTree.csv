@@ -1,0 +1,30 @@
+,nodeID,parentNode,dataSetFilters,evaluated,nodeFeature,nodePrediction,childrenNodes,gainOrMSE,treeLevel,pruned,isLeaf
+0,0,-1,{},True,physician-fee-freeze,democrat,"{1: 1, 0: 2, -1: 3}",0.5894634944600252,0,False,False
+1,1,0,{'physician-fee-freeze': 1},True,adoption-of-the-budget-resolution,republican,"{-1: 4, 1: 5}",0.1450351824717906,1,False,False
+2,2,0,{'physician-fee-freeze': 0},True,water-project-cost-sharing,democrat,"{0: 6, 1: 7}",0.5294586537620266,1,True,True
+3,3,0,{'physician-fee-freeze': -1},True,adoption-of-the-budget-resolution,democrat,"{-1: 8, 1: 9, 0: 10}",0.1588702706531166,1,False,False
+4,4,1,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': -1}",True,duty-free-exports,republican,"{-1: 11, 0: 12, 1: 13}",0.3689773346467737,2,True,True
+5,5,1,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': 1}",True,anti-satellite-test-ban,republican,"{1: 14, -1: 15}",0.6375383764641389,2,False,False
+6,6,2,"{'physician-fee-freeze': 0, 'water-project-cost-sharing': 0}",True,mx-missile,republican,"{0: 16, 1: 17}",0.3112728915669904,2,True,True
+7,7,2,"{'physician-fee-freeze': 0, 'water-project-cost-sharing': 1}",True,,democrat,{},0.0,2,False,True
+8,8,3,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1}",True,religious-groups-in-schools,democrat,"{-1: 18, 1: 19}",0.5400683496247923,2,True,True
+9,9,3,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': 1}",True,,democrat,{},0.0,2,False,True
+10,10,3,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': 0}",True,,democrat,{},0.0,2,False,True
+11,11,4,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': -1, 'duty-free-exports': -1}",True,,republican,{},0.0,3,False,True
+12,12,4,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': -1, 'duty-free-exports': 0}",True,,republican,{},0.0,3,False,True
+13,13,4,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': -1, 'duty-free-exports': 1}",True,,democrat,{},0.0,3,False,True
+14,14,5,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': 1, 'anti-satellite-test-ban': 1}",True,,republican,{},0.0,3,False,True
+15,15,5,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': 1, 'anti-satellite-test-ban': -1}",True,immigration,democrat,"{1: 20, -1: 21}",0.3315552752320583,3,True,True
+16,16,6,"{'physician-fee-freeze': 0, 'water-project-cost-sharing': 0, 'mx-missile': 0}",True,,republican,{},0.0,3,False,True
+17,17,6,"{'physician-fee-freeze': 0, 'water-project-cost-sharing': 0, 'mx-missile': 1}",True,aid-to-nicaraguan-contras,republican,"{1: 22, 0: 23}",0.9999800684314308,3,True,True
+18,18,8,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'religious-groups-in-schools': -1}",True,,republican,{},0.0,3,False,True
+19,19,8,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'religious-groups-in-schools': 1}",True,education-spending,democrat,"{0: 24, -1: 25, 1: 26}",0.4291201705744933,3,False,False
+20,20,15,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': 1, 'anti-satellite-test-ban': -1, 'immigration': 1}",True,education-spending,republican,"{1: 27, -1: 28}",0.9999800684314308,4,True,True
+21,21,15,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': 1, 'anti-satellite-test-ban': -1, 'immigration': -1}",True,,democrat,{},0.0,4,False,True
+22,22,17,"{'physician-fee-freeze': 0, 'water-project-cost-sharing': 0, 'mx-missile': 1, 'aid-to-nicaraguan-contras': 1}",True,,republican,{},0.0,4,False,True
+23,23,17,"{'physician-fee-freeze': 0, 'water-project-cost-sharing': 0, 'mx-missile': 1, 'aid-to-nicaraguan-contras': 0}",True,,democrat,{},0.0,4,False,True
+24,24,19,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'religious-groups-in-schools': 1, 'education-spending': 0}",True,,republican,{},0.0,4,False,True
+25,25,19,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'religious-groups-in-schools': 1, 'education-spending': -1}",True,,democrat,{},0.0,4,False,True
+26,26,19,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'religious-groups-in-schools': 1, 'education-spending': 1}",True,,democrat,{},0.0,4,False,True
+27,27,20,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': 1, 'anti-satellite-test-ban': -1, 'immigration': 1, 'education-spending': 1}",True,,republican,{},0.0,5,False,True
+28,28,20,"{'physician-fee-freeze': 1, 'adoption-of-the-budget-resolution': 1, 'anti-satellite-test-ban': -1, 'immigration': 1, 'education-spending': -1}",True,,democrat,{},0.0,5,False,True

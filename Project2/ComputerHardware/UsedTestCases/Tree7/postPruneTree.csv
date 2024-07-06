@@ -1,0 +1,42 @@
+,Unnamed: 0,nodeID,parentNode,dataSetFilters,evaluated,nodeFeature,nodePrediction,childrenNodes,gainOrMSE,treeLevel,pruned,isLeaf
+0,0,0,-1,{},True,MMIN,104.23809523809524,"{'belowMean': 1, 'aboveMean': 2}",11060.56171875,0,False,False
+1,1,1,0,{'MMIN': 'belowMean'},True,CACH,52.890625,"{'belowMean': 3, 'aboveMean': 4}",1858.9424189814813,1,True,True
+2,2,2,0,{'MMIN': 'aboveMean'},True,CHMAX,268.55,"{'belowMean': 5, 'aboveMean': 6}",22147.785,1,False,False
+3,3,3,1,"{'MMIN': 'belowMean', 'CACH': 'belowMean'}",True,MMAX,39.351851851851855,"{'aboveMean': 7, 'belowMean': 8}",346.9501811594203,2,False,False
+4,4,4,1,"{'MMIN': 'belowMean', 'CACH': 'aboveMean'}",True,CHMIN,126.0,"{'aboveMean': 9, 'belowMean': 10}",7753.5,2,True,True
+5,5,5,2,"{'MMIN': 'aboveMean', 'CHMAX': 'belowMean'}",True,CHMIN,145.3,"{'aboveMean': 11, 'belowMean': 12}",2105.038095238095,2,False,False
+6,6,6,2,"{'MMIN': 'aboveMean', 'CHMAX': 'aboveMean'}",True,CACH,391.8,{'aboveMean': 13},41505.96000000001,2,False,False
+7,7,7,3,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'aboveMean'}",True,CHMIN,72.125,"{'belowMean': 14, 'aboveMean': 15}",660.1785714285714,3,False,False
+8,8,8,3,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'belowMean'}",True,MYCT,33.65217391304348,"{'belowMean': 16, 'aboveMean': 17}",263.9471635610766,3,False,False
+9,9,9,4,"{'MMIN': 'belowMean', 'CACH': 'aboveMean', 'CHMIN': 'aboveMean'}",True,MMAX,169.5,"{'belowMean': 18, 'aboveMean': 19}",16928.666666666668,3,True,True
+10,10,10,4,"{'MMIN': 'belowMean', 'CACH': 'aboveMean', 'CHMIN': 'belowMean'}",True,MMAX,97.0,"{'aboveMean': 20, 'belowMean': 21}",272.2083333333333,3,False,False
+11,11,11,5,"{'MMIN': 'aboveMean', 'CHMAX': 'belowMean', 'CHMIN': 'aboveMean'}",True,CACH,162.42857142857142,"{'aboveMean': 22, 'belowMean': 23}",2239.5,3,False,False
+12,12,12,5,"{'MMIN': 'aboveMean', 'CHMAX': 'belowMean', 'CHMIN': 'belowMean'}",True,CACH,105.33333333333331,"{'aboveMean': 24, 'belowMean': 25}",16.666666666666668,3,False,False
+13,13,13,6,"{'MMIN': 'aboveMean', 'CHMAX': 'aboveMean', 'CACH': 'aboveMean'}",True,CHMIN,391.8,{'aboveMean': 26},41505.96000000001,3,False,False
+14,14,14,7,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'aboveMean', 'CHMIN': 'belowMean'}",True,CHMAX,75.28571428571429,"{'belowMean': 27, 'aboveMean': 28}",741.8333333333333,4,False,False
+15,15,15,7,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'aboveMean', 'CHMIN': 'aboveMean'}",True,,50.0,{},0.0,4,False,True
+16,16,16,8,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'belowMean', 'MYCT': 'belowMean'}",True,CHMAX,37.36,"{'belowMean': 29, 'aboveMean': 30}",275.2575438596491,4,False,False
+17,17,17,8,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'belowMean', 'MYCT': 'aboveMean'}",True,CHMAX,29.23809523809524,"{'belowMean': 31, 'aboveMean': 32}",225.33333333333331,4,False,False
+18,18,18,9,"{'MMIN': 'belowMean', 'CACH': 'aboveMean', 'CHMIN': 'aboveMean', 'MMAX': 'belowMean'}",True,CHMAX,156.66666666666666,{'aboveMean': 33},22571.55555555556,4,False,False
+19,19,19,9,"{'MMIN': 'belowMean', 'CACH': 'aboveMean', 'CHMIN': 'aboveMean', 'MMAX': 'aboveMean'}",True,,208.0,{},0.0,4,False,True
+20,20,20,10,"{'MMIN': 'belowMean', 'CACH': 'aboveMean', 'CHMIN': 'belowMean', 'MMAX': 'aboveMean'}",True,CHMAX,142.5,{'aboveMean': 34},2.25,4,False,False
+21,21,21,10,"{'MMIN': 'belowMean', 'CACH': 'aboveMean', 'CHMIN': 'belowMean', 'MMAX': 'belowMean'}",True,CHMAX,74.25,"{'belowMean': 35, 'aboveMean': 36}",384.5,4,False,False
+22,22,22,11,"{'MMIN': 'aboveMean', 'CHMAX': 'belowMean', 'CHMIN': 'aboveMean', 'CACH': 'aboveMean'}",True,MMAX,164.0,{'aboveMean': 37},2854.4,4,False,False
+23,23,23,11,"{'MMIN': 'aboveMean', 'CHMAX': 'belowMean', 'CHMIN': 'aboveMean', 'CACH': 'belowMean'}",True,MMAX,158.5,{'aboveMean': 38},702.25,4,False,False
+24,24,24,12,"{'MMIN': 'aboveMean', 'CHMAX': 'belowMean', 'CHMIN': 'belowMean', 'CACH': 'aboveMean'}",True,MMAX,135.0,{'aboveMean': 39},25.0,4,False,False
+25,25,25,12,"{'MMIN': 'aboveMean', 'CHMAX': 'belowMean', 'CHMIN': 'belowMean', 'CACH': 'belowMean'}",True,,46.0,{},0.0,4,False,True
+26,26,26,13,"{'MMIN': 'aboveMean', 'CHMAX': 'aboveMean', 'CACH': 'aboveMean', 'CHMIN': 'aboveMean'}",True,MMAX,391.8,{'aboveMean': 40},41505.96000000001,4,False,False
+27,27,27,14,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'aboveMean', 'CHMIN': 'belowMean', 'CHMAX': 'belowMean'}",True,,73.83333333333333,{},0.0,5,False,True
+28,28,28,14,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'aboveMean', 'CHMIN': 'belowMean', 'CHMAX': 'aboveMean'}",True,,84.0,{},0.0,5,False,True
+29,29,29,16,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'belowMean', 'MYCT': 'belowMean', 'CHMAX': 'belowMean'}",True,,35.68421052631579,{},0.0,5,False,True
+30,30,30,16,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'belowMean', 'MYCT': 'belowMean', 'CHMAX': 'aboveMean'}",True,,42.66666666666666,{},0.0,5,False,True
+31,31,31,17,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'belowMean', 'MYCT': 'aboveMean', 'CHMAX': 'belowMean'}",True,,28.0,{},0.0,5,False,True
+32,32,32,17,"{'MMIN': 'belowMean', 'CACH': 'belowMean', 'MMAX': 'belowMean', 'MYCT': 'aboveMean', 'CHMAX': 'aboveMean'}",True,,41.0,{},0.0,5,False,True
+33,33,33,18,"{'MMIN': 'belowMean', 'CACH': 'aboveMean', 'CHMIN': 'aboveMean', 'MMAX': 'belowMean', 'CHMAX': 'aboveMean'}",True,,156.66666666666666,{},0.0,5,False,True
+34,34,34,20,"{'MMIN': 'belowMean', 'CACH': 'aboveMean', 'CHMIN': 'belowMean', 'MMAX': 'aboveMean', 'CHMAX': 'aboveMean'}",True,,142.5,{},0.0,5,False,True
+35,35,35,21,"{'MMIN': 'belowMean', 'CACH': 'aboveMean', 'CHMIN': 'belowMean', 'MMAX': 'belowMean', 'CHMAX': 'belowMean'}",True,,77.0,{},0.0,5,False,True
+36,36,36,21,"{'MMIN': 'belowMean', 'CACH': 'aboveMean', 'CHMIN': 'belowMean', 'MMAX': 'belowMean', 'CHMAX': 'aboveMean'}",True,,66.0,{},0.0,5,False,True
+37,37,37,22,"{'MMIN': 'aboveMean', 'CHMAX': 'belowMean', 'CHMIN': 'aboveMean', 'CACH': 'aboveMean', 'MMAX': 'aboveMean'}",True,,164.0,{},0.0,5,False,True
+38,38,38,23,"{'MMIN': 'aboveMean', 'CHMAX': 'belowMean', 'CHMIN': 'aboveMean', 'CACH': 'belowMean', 'MMAX': 'aboveMean'}",True,,158.5,{},0.0,5,False,True
+39,39,39,24,"{'MMIN': 'aboveMean', 'CHMAX': 'belowMean', 'CHMIN': 'belowMean', 'CACH': 'aboveMean', 'MMAX': 'aboveMean'}",True,,135.0,{},0.0,5,False,True
+40,40,40,26,"{'MMIN': 'aboveMean', 'CHMAX': 'aboveMean', 'CACH': 'aboveMean', 'CHMIN': 'aboveMean', 'MMAX': 'aboveMean'}",True,,391.8,{},0.0,5,False,True

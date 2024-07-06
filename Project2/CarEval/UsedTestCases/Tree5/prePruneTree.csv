@@ -1,0 +1,173 @@
+,nodeID,parentNode,dataSetFilters,evaluated,nodeFeature,nodePrediction,childrenNodes,gainOrMSE,treeLevel,pruned,isLeaf
+0,0,-1,{},True,safety,unacc,"{0: 1, 1: 2, 2: 3}",0.16098482868072383,0,False,False
+1,1,0,{'safety': 0},True,,unacc,{},0.0,1,False,True
+2,2,0,{'safety': 1},True,persons,unacc,"{0: 4, 1: 5, 2: 6}",0.1856900447592718,1,False,False
+3,3,0,{'safety': 2},True,persons,unacc,"{0: 7, 1: 8, 2: 9}",0.31008580812564074,1,False,False
+4,4,2,"{'safety': 1, 'persons': 0}",True,,unacc,{},0.0,2,False,True
+5,5,2,"{'safety': 1, 'persons': 1}",True,lug_boot,acc,"{0: 10, 1: 11, 2: 12}",0.13370620905865827,2,False,False
+6,6,2,"{'safety': 1, 'persons': 2}",True,buying,acc,"{3: 13, 1: 14, 2: 15, 0: 16}",0.1266428645883442,2,False,False
+7,7,3,"{'safety': 2, 'persons': 0}",True,,unacc,{},0.0,2,False,True
+8,8,3,"{'safety': 2, 'persons': 1}",True,buying,acc,"{3: 17, 2: 18, 0: 19, 1: 20}",0.24511195746380476,2,False,False
+9,9,3,"{'safety': 2, 'persons': 2}",True,buying,acc,"{2: 21, 3: 22, 1: 23, 0: 24}",0.25570843661990517,2,False,False
+10,10,5,"{'safety': 1, 'persons': 1, 'lug_boot': 0}",True,buying,unacc,"{3: 25, 2: 26, 1: 27, 0: 28}",0.21227029294357516,3,False,False
+11,11,5,"{'safety': 1, 'persons': 1, 'lug_boot': 1}",True,doors,acc,"{0: 29, 1: 30, 3: 31, 2: 32}",0.16854918456545098,3,False,False
+12,12,5,"{'safety': 1, 'persons': 1, 'lug_boot': 2}",True,buying,acc,"{3: 33, 2: 34, 0: 35, 1: 36}",0.27975641346790947,3,False,False
+13,13,6,"{'safety': 1, 'persons': 2, 'buying': 3}",True,maint,unacc,"{3: 37, 2: 38, 1: 39, 0: 40}",0.29209252641148536,3,False,False
+14,14,6,"{'safety': 1, 'persons': 2, 'buying': 1}",True,lug_boot,acc,"{0: 41, 2: 42, 1: 43}",0.4618645214293881,3,False,False
+15,15,6,"{'safety': 1, 'persons': 2, 'buying': 2}",True,lug_boot,unacc,"{0: 44, 1: 45, 2: 46}",0.260428611878484,3,False,False
+16,16,6,"{'safety': 1, 'persons': 2, 'buying': 0}",True,lug_boot,acc,"{0: 47, 2: 48, 1: 49}",0.1842012683011661,3,False,False
+17,17,8,"{'safety': 2, 'persons': 1, 'buying': 3}",True,maint,acc,"{3: 50, 2: 51, 0: 52, 1: 53}",0.4849455163851533,3,False,False
+18,18,8,"{'safety': 2, 'persons': 1, 'buying': 2}",True,maint,acc,"{3: 54, 2: 55, 0: 56, 1: 57}",0.5134497233487889,3,False,False
+19,19,8,"{'safety': 2, 'persons': 1, 'buying': 0}",True,maint,vgood,"{3: 58, 2: 59, 0: 60, 1: 61}",0.47132499010452666,3,False,False
+20,20,8,"{'safety': 2, 'persons': 1, 'buying': 1}",True,maint,acc,"{1: 62, 2: 63, 3: 64, 0: 65}",0.4299455256040065,3,False,False
+21,21,9,"{'safety': 2, 'persons': 2, 'buying': 2}",True,maint,unacc,"{3: 66, 2: 67, 1: 68, 0: 69}",0.6117198330310752,3,False,False
+22,22,9,"{'safety': 2, 'persons': 2, 'buying': 3}",True,maint,unacc,"{3: 70, 2: 71, 1: 72, 0: 73}",0.4207804574567612,3,False,False
+23,23,9,"{'safety': 2, 'persons': 2, 'buying': 1}",True,maint,acc,"{1: 74, 0: 75, 2: 76, 3: 77}",0.439103881179797,3,False,False
+24,24,9,"{'safety': 2, 'persons': 2, 'buying': 0}",True,maint,vgood,"{3: 78, 2: 79, 0: 80, 1: 81}",0.40343514505138206,3,False,False
+25,25,10,"{'safety': 1, 'persons': 1, 'lug_boot': 0, 'buying': 3}",True,,unacc,{},0.0,4,False,True
+26,26,10,"{'safety': 1, 'persons': 1, 'lug_boot': 0, 'buying': 2}",True,,unacc,{},0.0,4,False,True
+27,27,10,"{'safety': 1, 'persons': 1, 'lug_boot': 0, 'buying': 1}",True,maint,acc,"{2: 82, 1: 83, 0: 84}",0.6329070996017699,4,False,False
+28,28,10,"{'safety': 1, 'persons': 1, 'lug_boot': 0, 'buying': 0}",True,maint,acc,"{3: 85, 1: 86, 2: 87}",0.6293299169517819,4,False,False
+29,29,11,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 0}",True,maint,unacc,"{0: 88, 2: 89, 3: 90}",0.19312521304860442,4,False,False
+30,30,11,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 1}",True,buying,acc,"{2: 91, 1: 92, 0: 93}",0.6379659057318251,4,False,False
+31,31,11,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 3}",True,buying,acc,"{2: 94, 0: 95, 3: 96}",0.21152111150412786,4,False,False
+32,32,11,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 2}",True,buying,acc,"{0: 97, 3: 98, 2: 99, 1: 100}",0.16749645150750925,4,False,False
+33,33,12,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 3}",True,maint,unacc,"{2: 101, 3: 102, 0: 103, 1: 104}",0.5347546074784683,4,False,False
+34,34,12,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 2}",True,,acc,{},0.0,4,False,True
+35,35,12,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 0}",True,maint,acc,"{3: 105, 2: 106, 1: 107, 0: 108}",0.5247528799737299,4,False,False
+36,36,12,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 1}",True,maint,acc,"{3: 109, 2: 110, 1: 111, 0: 112}",0.3388470063185143,4,False,False
+37,37,13,"{'safety': 1, 'persons': 2, 'buying': 3, 'maint': 3}",True,,unacc,{},0.0,4,False,True
+38,38,13,"{'safety': 1, 'persons': 2, 'buying': 3, 'maint': 2}",True,,unacc,{},0.0,4,False,True
+39,39,13,"{'safety': 1, 'persons': 2, 'buying': 3, 'maint': 1}",True,lug_boot,acc,"{0: 113, 1: 114, 2: 115}",0.5265804777165448,4,False,False
+40,40,13,"{'safety': 1, 'persons': 2, 'buying': 3, 'maint': 0}",True,lug_boot,acc,"{0: 116, 2: 117}",0.9999851670396317,4,False,False
+41,41,14,"{'safety': 1, 'persons': 2, 'buying': 1, 'lug_boot': 0}",True,maint,unacc,"{3: 118, 2: 119, 1: 120}",0.540841950521804,4,False,False
+42,42,14,"{'safety': 1, 'persons': 2, 'buying': 1, 'lug_boot': 2}",True,maint,acc,"{3: 121, 2: 122, 1: 123, 0: 124}",0.5347546074784683,4,False,False
+43,43,14,"{'safety': 1, 'persons': 2, 'buying': 1, 'lug_boot': 1}",True,,acc,{},0.0,4,False,True
+44,44,15,"{'safety': 1, 'persons': 2, 'buying': 2, 'lug_boot': 0}",True,,unacc,{},0.0,4,False,True
+45,45,15,"{'safety': 1, 'persons': 2, 'buying': 2, 'lug_boot': 1}",True,maint,acc,"{3: 125, 2: 126, 1: 127, 0: 128}",0.44257174184038245,4,False,False
+46,46,15,"{'safety': 1, 'persons': 2, 'buying': 2, 'lug_boot': 2}",True,maint,acc,"{3: 129, 0: 130}",0.9999912563832019,4,False,False
+47,47,16,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 0}",True,doors,acc,"{0: 131, 2: 132, 3: 133, 1: 134}",0.35221307679337577,4,False,False
+48,48,16,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 2}",True,maint,acc,"{3: 135, 2: 136, 0: 137}",0.4454737024614135,4,False,False
+49,49,16,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 1}",True,maint,acc,"{1: 138, 2: 139, 3: 140, 0: 141}",0.24224439980196616,4,False,False
+50,50,17,"{'safety': 2, 'persons': 1, 'buying': 3, 'maint': 3}",True,,unacc,{},0.0,4,False,True
+51,51,17,"{'safety': 2, 'persons': 1, 'buying': 3, 'maint': 2}",True,,unacc,{},0.0,4,False,True
+52,52,17,"{'safety': 2, 'persons': 1, 'buying': 3, 'maint': 0}",True,,acc,{},0.0,4,False,True
+53,53,17,"{'safety': 2, 'persons': 1, 'buying': 3, 'maint': 1}",True,,acc,{},0.0,4,False,True
+54,54,18,"{'safety': 2, 'persons': 1, 'buying': 2, 'maint': 3}",True,,unacc,{},0.0,4,False,True
+55,55,18,"{'safety': 2, 'persons': 1, 'buying': 2, 'maint': 2}",True,,acc,{},0.0,4,False,True
+56,56,18,"{'safety': 2, 'persons': 1, 'buying': 2, 'maint': 0}",True,,acc,{},0.0,4,False,True
+57,57,18,"{'safety': 2, 'persons': 1, 'buying': 2, 'maint': 1}",True,,acc,{},0.0,4,False,True
+58,58,19,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 3}",True,,acc,{},0.0,4,False,True
+59,59,19,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 2}",True,doors,vgood,"{1: 142, 3: 143}",0.9999851670396317,4,False,False
+60,60,19,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 0}",True,lug_boot,good,"{2: 144, 1: 145, 0: 146}",0.31466385357271176,4,False,False
+61,61,19,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 1}",True,lug_boot,vgood,"{2: 147, 1: 148, 0: 149}",0.4008884814750605,4,False,False
+62,62,20,"{'safety': 2, 'persons': 1, 'buying': 1, 'maint': 1}",True,lug_boot,acc,"{0: 150, 1: 151, 2: 152}",0.6666565342157154,4,False,False
+63,63,20,"{'safety': 2, 'persons': 1, 'buying': 1, 'maint': 2}",True,,acc,{},0.0,4,False,True
+64,64,20,"{'safety': 2, 'persons': 1, 'buying': 1, 'maint': 3}",True,,acc,{},0.0,4,False,True
+65,65,20,"{'safety': 2, 'persons': 1, 'buying': 1, 'maint': 0}",True,doors,good,"{2: 153, 1: 154, 0: 155}",0.540841950521804,4,False,False
+66,66,21,"{'safety': 2, 'persons': 2, 'buying': 2, 'maint': 3}",True,,unacc,{},0.0,4,False,True
+67,67,21,"{'safety': 2, 'persons': 2, 'buying': 2, 'maint': 2}",True,,acc,{},0.0,4,False,True
+68,68,21,"{'safety': 2, 'persons': 2, 'buying': 2, 'maint': 1}",True,,acc,{},0.0,4,False,True
+69,69,21,"{'safety': 2, 'persons': 2, 'buying': 2, 'maint': 0}",True,,acc,{},0.0,4,False,True
+70,70,22,"{'safety': 2, 'persons': 2, 'buying': 3, 'maint': 3}",True,,unacc,{},0.0,4,False,True
+71,71,22,"{'safety': 2, 'persons': 2, 'buying': 3, 'maint': 2}",True,,unacc,{},0.0,4,False,True
+72,72,22,"{'safety': 2, 'persons': 2, 'buying': 3, 'maint': 1}",True,lug_boot,acc,"{0: 156, 1: 157, 2: 158}",0.4743428670325254,4,False,False
+73,73,22,"{'safety': 2, 'persons': 2, 'buying': 3, 'maint': 0}",True,,acc,{},0.0,4,False,True
+74,74,23,"{'safety': 2, 'persons': 2, 'buying': 1, 'maint': 1}",True,lug_boot,acc,"{0: 159, 1: 160, 2: 161}",0.45671309874838045,4,False,False
+75,75,23,"{'safety': 2, 'persons': 2, 'buying': 1, 'maint': 0}",True,lug_boot,good,"{0: 162, 2: 163, 1: 164}",0.4999929394771436,4,False,False
+76,76,23,"{'safety': 2, 'persons': 2, 'buying': 1, 'maint': 2}",True,,acc,{},0.0,4,False,True
+77,77,23,"{'safety': 2, 'persons': 2, 'buying': 1, 'maint': 3}",True,,acc,{},0.0,4,False,True
+78,78,24,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 3}",True,,acc,{},0.0,4,False,True
+79,79,24,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 2}",True,lug_boot,vgood,"{0: 165, 2: 166}",0.9999851670396317,4,False,False
+80,80,24,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 0}",True,lug_boot,vgood,"{1: 167, 2: 168, 0: 169}",0.2897679245307009,4,False,False
+81,81,24,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 1}",True,lug_boot,vgood,"{2: 170, 0: 171}",0.9999851670396317,4,False,False
+82,82,27,"{'safety': 1, 'persons': 1, 'lug_boot': 0, 'buying': 1, 'maint': 2}",True,,unacc,{},0.0,5,False,True
+83,83,27,"{'safety': 1, 'persons': 1, 'lug_boot': 0, 'buying': 1, 'maint': 1}",True,,acc,{},0.0,5,False,True
+84,84,27,"{'safety': 1, 'persons': 1, 'lug_boot': 0, 'buying': 1, 'maint': 0}",True,,acc,{},0.0,5,False,True
+85,85,28,"{'safety': 1, 'persons': 1, 'lug_boot': 0, 'buying': 0, 'maint': 3}",True,,unacc,{},0.0,5,False,True
+86,86,28,"{'safety': 1, 'persons': 1, 'lug_boot': 0, 'buying': 0, 'maint': 1}",True,,acc,{},0.0,5,False,True
+87,87,28,"{'safety': 1, 'persons': 1, 'lug_boot': 0, 'buying': 0, 'maint': 2}",True,,acc,{},0.0,5,False,True
+88,88,29,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 0, 'maint': 0}",True,,acc,{},0.0,5,False,True
+89,89,29,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 0, 'maint': 2}",True,,unacc,{},0.0,5,False,True
+90,90,29,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 0, 'maint': 3}",True,,unacc,{},0.0,5,False,True
+91,91,30,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 1, 'buying': 2}",True,,unacc,{},0.0,5,False,True
+92,92,30,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 1, 'buying': 1}",True,,acc,{},0.0,5,False,True
+93,93,30,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 1, 'buying': 0}",True,,acc,{},0.0,5,False,True
+94,94,31,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 3, 'buying': 2}",True,,unacc,{},0.0,5,False,True
+95,95,31,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 3, 'buying': 0}",True,,acc,{},0.0,5,False,True
+96,96,31,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 3, 'buying': 3}",True,,acc,{},0.0,5,False,True
+97,97,32,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 2, 'buying': 0}",True,,acc,{},0.0,5,False,True
+98,98,32,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 2, 'buying': 3}",True,,acc,{},0.0,5,False,True
+99,99,32,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 2, 'buying': 2}",True,,acc,{},0.0,5,False,True
+100,100,32,"{'safety': 1, 'persons': 1, 'lug_boot': 1, 'doors': 2, 'buying': 1}",True,,acc,{},0.0,5,False,True
+101,101,33,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 3, 'maint': 2}",True,,unacc,{},0.0,5,False,True
+102,102,33,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 3, 'maint': 3}",True,,unacc,{},0.0,5,False,True
+103,103,33,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 3, 'maint': 0}",True,,acc,{},0.0,5,False,True
+104,104,33,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 3, 'maint': 1}",True,,acc,{},0.0,5,False,True
+105,105,35,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 0, 'maint': 3}",True,,acc,{},0.0,5,False,True
+106,106,35,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 0, 'maint': 2}",True,,acc,{},0.0,5,False,True
+107,107,35,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 0, 'maint': 1}",True,,good,{},0.0,5,False,True
+108,108,35,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 0, 'maint': 0}",True,,good,{},0.0,5,False,True
+109,109,36,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 1, 'maint': 3}",True,,acc,{},0.0,5,False,True
+110,110,36,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 1, 'maint': 2}",True,,acc,{},0.0,5,False,True
+111,111,36,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 1, 'maint': 1}",True,,acc,{},0.0,5,False,True
+112,112,36,"{'safety': 1, 'persons': 1, 'lug_boot': 2, 'buying': 1, 'maint': 0}",True,,good,{},0.0,5,False,True
+113,113,39,"{'safety': 1, 'persons': 2, 'buying': 3, 'maint': 1, 'lug_boot': 0}",True,,unacc,{},0.0,5,False,True
+114,114,39,"{'safety': 1, 'persons': 2, 'buying': 3, 'maint': 1, 'lug_boot': 1}",True,,acc,{},0.0,5,False,True
+115,115,39,"{'safety': 1, 'persons': 2, 'buying': 3, 'maint': 1, 'lug_boot': 2}",True,,acc,{},0.0,5,False,True
+116,116,40,"{'safety': 1, 'persons': 2, 'buying': 3, 'maint': 0, 'lug_boot': 0}",True,,unacc,{},0.0,5,False,True
+117,117,40,"{'safety': 1, 'persons': 2, 'buying': 3, 'maint': 0, 'lug_boot': 2}",True,,acc,{},0.0,5,False,True
+118,118,41,"{'safety': 1, 'persons': 2, 'buying': 1, 'lug_boot': 0, 'maint': 3}",True,,unacc,{},0.0,5,False,True
+119,119,41,"{'safety': 1, 'persons': 2, 'buying': 1, 'lug_boot': 0, 'maint': 2}",True,,unacc,{},0.0,5,False,True
+120,120,41,"{'safety': 1, 'persons': 2, 'buying': 1, 'lug_boot': 0, 'maint': 1}",True,,acc,{},0.0,5,False,True
+121,121,42,"{'safety': 1, 'persons': 2, 'buying': 1, 'lug_boot': 2, 'maint': 3}",True,,acc,{},0.0,5,False,True
+122,122,42,"{'safety': 1, 'persons': 2, 'buying': 1, 'lug_boot': 2, 'maint': 2}",True,,acc,{},0.0,5,False,True
+123,123,42,"{'safety': 1, 'persons': 2, 'buying': 1, 'lug_boot': 2, 'maint': 1}",True,,acc,{},0.0,5,False,True
+124,124,42,"{'safety': 1, 'persons': 2, 'buying': 1, 'lug_boot': 2, 'maint': 0}",True,,good,{},0.0,5,False,True
+125,125,45,"{'safety': 1, 'persons': 2, 'buying': 2, 'lug_boot': 1, 'maint': 3}",True,,unacc,{},0.0,5,False,True
+126,126,45,"{'safety': 1, 'persons': 2, 'buying': 2, 'lug_boot': 1, 'maint': 2}",True,,acc,{},0.0,5,False,True
+127,127,45,"{'safety': 1, 'persons': 2, 'buying': 2, 'lug_boot': 1, 'maint': 1}",True,,acc,{},0.0,5,False,True
+128,128,45,"{'safety': 1, 'persons': 2, 'buying': 2, 'lug_boot': 1, 'maint': 0}",True,,acc,{},0.0,5,False,True
+129,129,46,"{'safety': 1, 'persons': 2, 'buying': 2, 'lug_boot': 2, 'maint': 3}",True,,unacc,{},0.0,5,False,True
+130,130,46,"{'safety': 1, 'persons': 2, 'buying': 2, 'lug_boot': 2, 'maint': 0}",True,,acc,{},0.0,5,False,True
+131,131,47,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 0, 'doors': 0}",True,,unacc,{},0.0,5,False,True
+132,132,47,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 0, 'doors': 2}",True,,unacc,{},0.0,5,False,True
+133,133,47,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 0, 'doors': 3}",True,,acc,{},0.0,5,False,True
+134,134,47,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 0, 'doors': 1}",True,,acc,{},0.0,5,False,True
+135,135,48,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 2, 'maint': 3}",True,,acc,{},0.0,5,False,True
+136,136,48,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 2, 'maint': 2}",True,,acc,{},0.0,5,False,True
+137,137,48,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 2, 'maint': 0}",True,,good,{},0.0,5,False,True
+138,138,49,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 1, 'maint': 1}",True,,good,{},0.0,5,False,True
+139,139,49,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 1, 'maint': 2}",True,,acc,{},0.0,5,False,True
+140,140,49,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 1, 'maint': 3}",True,,acc,{},0.0,5,False,True
+141,141,49,"{'safety': 1, 'persons': 2, 'buying': 0, 'lug_boot': 1, 'maint': 0}",True,,acc,{},0.0,5,False,True
+142,142,59,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 2, 'doors': 1}",True,,acc,{},0.0,5,False,True
+143,143,59,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 2, 'doors': 3}",True,,vgood,{},0.0,5,False,True
+144,144,60,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 0, 'lug_boot': 2}",True,,vgood,{},0.0,5,False,True
+145,145,60,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 0, 'lug_boot': 1}",True,,good,{},0.0,5,False,True
+146,146,60,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 0, 'lug_boot': 0}",True,,good,{},0.0,5,False,True
+147,147,61,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 1, 'lug_boot': 2}",True,,vgood,{},0.0,5,False,True
+148,148,61,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 1, 'lug_boot': 1}",True,,vgood,{},0.0,5,False,True
+149,149,61,"{'safety': 2, 'persons': 1, 'buying': 0, 'maint': 1, 'lug_boot': 0}",True,,good,{},0.0,5,False,True
+150,150,62,"{'safety': 2, 'persons': 1, 'buying': 1, 'maint': 1, 'lug_boot': 0}",True,,acc,{},0.0,5,False,True
+151,151,62,"{'safety': 2, 'persons': 1, 'buying': 1, 'maint': 1, 'lug_boot': 1}",True,,vgood,{},0.0,5,False,True
+152,152,62,"{'safety': 2, 'persons': 1, 'buying': 1, 'maint': 1, 'lug_boot': 2}",True,,vgood,{},0.0,5,False,True
+153,153,65,"{'safety': 2, 'persons': 1, 'buying': 1, 'maint': 0, 'doors': 2}",True,,vgood,{},0.0,5,False,True
+154,154,65,"{'safety': 2, 'persons': 1, 'buying': 1, 'maint': 0, 'doors': 1}",True,,good,{},0.0,5,False,True
+155,155,65,"{'safety': 2, 'persons': 1, 'buying': 1, 'maint': 0, 'doors': 0}",True,,good,{},0.0,5,False,True
+156,156,72,"{'safety': 2, 'persons': 2, 'buying': 3, 'maint': 1, 'lug_boot': 0}",True,,unacc,{},0.0,5,False,True
+157,157,72,"{'safety': 2, 'persons': 2, 'buying': 3, 'maint': 1, 'lug_boot': 1}",True,,acc,{},0.0,5,False,True
+158,158,72,"{'safety': 2, 'persons': 2, 'buying': 3, 'maint': 1, 'lug_boot': 2}",True,,acc,{},0.0,5,False,True
+159,159,74,"{'safety': 2, 'persons': 2, 'buying': 1, 'maint': 1, 'lug_boot': 0}",True,,acc,{},0.0,5,False,True
+160,160,74,"{'safety': 2, 'persons': 2, 'buying': 1, 'maint': 1, 'lug_boot': 1}",True,,vgood,{},0.0,5,False,True
+161,161,74,"{'safety': 2, 'persons': 2, 'buying': 1, 'maint': 1, 'lug_boot': 2}",True,,vgood,{},0.0,5,False,True
+162,162,75,"{'safety': 2, 'persons': 2, 'buying': 1, 'maint': 0, 'lug_boot': 0}",True,,good,{},0.0,5,False,True
+163,163,75,"{'safety': 2, 'persons': 2, 'buying': 1, 'maint': 0, 'lug_boot': 2}",True,,vgood,{},0.0,5,False,True
+164,164,75,"{'safety': 2, 'persons': 2, 'buying': 1, 'maint': 0, 'lug_boot': 1}",True,,vgood,{},0.0,5,False,True
+165,165,79,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 2, 'lug_boot': 0}",True,,acc,{},0.0,5,False,True
+166,166,79,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 2, 'lug_boot': 2}",True,,vgood,{},0.0,5,False,True
+167,167,80,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 0, 'lug_boot': 1}",True,,vgood,{},0.0,5,False,True
+168,168,80,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 0, 'lug_boot': 2}",True,,vgood,{},0.0,5,False,True
+169,169,80,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 0, 'lug_boot': 0}",True,,good,{},0.0,5,False,True
+170,170,81,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 1, 'lug_boot': 2}",True,,vgood,{},0.0,5,False,True
+171,171,81,"{'safety': 2, 'persons': 2, 'buying': 0, 'maint': 1, 'lug_boot': 0}",True,,good,{},0.0,5,False,True

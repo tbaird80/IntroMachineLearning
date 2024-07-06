@@ -1,0 +1,28 @@
+,nodeID,parentNode,dataSetFilters,evaluated,nodeFeature,nodePrediction,childrenNodes,gainOrMSE,treeLevel,pruned,isLeaf
+0,0,-1,{},True,physician-fee-freeze,democrat,"{1: 1, -1: 2, 0: 3}",0.72674532520552,0,False,False
+1,1,0,{'physician-fee-freeze': 1},True,synfuels-corporation-cutback,republican,"{-1: 4, 1: 5, 0: 6}",0.19874830437168656,1,False,False
+2,2,0,{'physician-fee-freeze': -1},True,,democrat,{},0.0,1,False,True
+3,3,0,{'physician-fee-freeze': 0},True,,democrat,{},0.0,1,False,True
+4,4,1,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1}",True,adoption-of-the-budget-resolution,republican,"{-1: 7, 0: 8, 1: 9}",0.06374771381262499,2,False,False
+5,5,1,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1}",True,mx-missile,republican,"{-1: 10, 1: 11}",0.20302494146225572,2,False,False
+6,6,1,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 0}",True,,republican,{},0.0,2,False,True
+7,7,4,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'adoption-of-the-budget-resolution': -1}",True,,republican,{},0.0,3,False,True
+8,8,4,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'adoption-of-the-budget-resolution': 0}",True,,republican,{},0.0,3,False,True
+9,9,4,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'adoption-of-the-budget-resolution': 1}",True,export-administration-act-south-africa,republican,"{1: 12, 0: 13}",0.3677465699467174,3,False,False
+10,10,5,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': -1}",True,export-administration-act-south-africa,republican,"{-1: 14, 1: 15, 0: 16}",0.29957700459385417,3,False,False
+11,11,5,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': 1}",True,immigration,democrat,"{1: 17, -1: 18}",0.33155527523205836,3,False,False
+12,12,9,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'adoption-of-the-budget-resolution': 1, 'export-administration-act-south-africa': 1}",True,,republican,{},0.0,4,False,True
+13,13,9,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'adoption-of-the-budget-resolution': 1, 'export-administration-act-south-africa': 0}",True,aid-to-nicaraguan-contras,republican,"{0: 19, -1: 20}",0.9999800684314307,4,False,False
+14,14,10,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': -1, 'export-administration-act-south-africa': -1}",True,superfund-right-to-sue,republican,"{1: 21, -1: 22}",0.44592267686143466,4,False,False
+15,15,10,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': -1, 'export-administration-act-south-africa': 1}",True,,republican,{},0.0,4,False,True
+16,16,10,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': -1, 'export-administration-act-south-africa': 0}",True,,democrat,{},0.0,4,False,True
+17,17,11,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': 1, 'immigration': 1}",True,anti-satellite-test-ban,republican,"{1: 23, -1: 24}",0.9999800684314307,4,False,False
+18,18,11,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': 1, 'immigration': -1}",True,,democrat,{},0.0,4,False,True
+19,19,13,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'adoption-of-the-budget-resolution': 1, 'export-administration-act-south-africa': 0, 'aid-to-nicaraguan-contras': 0}",True,,republican,{},0.0,5,False,True
+20,20,13,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'adoption-of-the-budget-resolution': 1, 'export-administration-act-south-africa': 0, 'aid-to-nicaraguan-contras': -1}",True,,democrat,{},0.0,5,False,True
+21,21,14,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': -1, 'export-administration-act-south-africa': -1, 'superfund-right-to-sue': 1}",True,water-project-cost-sharing,republican,"{1: 25, -1: 26}",0.9999872275307352,5,False,False
+22,22,14,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': -1, 'export-administration-act-south-africa': -1, 'superfund-right-to-sue': -1}",True,,democrat,{},0.0,5,False,True
+23,23,17,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': 1, 'immigration': 1, 'anti-satellite-test-ban': 1}",True,,republican,{},0.0,5,False,True
+24,24,17,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': 1, 'immigration': 1, 'anti-satellite-test-ban': -1}",True,,democrat,{},0.0,5,False,True
+25,25,21,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': -1, 'export-administration-act-south-africa': -1, 'superfund-right-to-sue': 1, 'water-project-cost-sharing': 1}",True,,republican,{},0.0,6,False,True
+26,26,21,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'mx-missile': -1, 'export-administration-act-south-africa': -1, 'superfund-right-to-sue': 1, 'water-project-cost-sharing': -1}",True,,democrat,{},0.0,6,False,True

@@ -1,0 +1,40 @@
+,nodeID,parentNode,dataSetFilters,evaluated,nodeFeature,nodePrediction,childrenNodes,gainOrMSE,treeLevel,pruned,isLeaf
+0,0,-1,{},True,physician-fee-freeze,democrat,"{1: 1, 0: 2, -1: 3}",0.5675163333400276,0,False,False
+1,1,0,{'physician-fee-freeze': 1},True,synfuels-corporation-cutback,republican,"{-1: 4, 1: 5, 0: 6}",0.1417199017736919,1,True,True
+2,2,0,{'physician-fee-freeze': 0},True,aid-to-nicaraguan-contras,democrat,"{0: 7, 1: 8}",0.9999872275307352,1,False,False
+3,3,0,{'physician-fee-freeze': -1},True,adoption-of-the-budget-resolution,democrat,"{-1: 9, 1: 10, 0: 11}",0.1259112357105727,1,False,False
+4,4,1,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1}",True,immigration,republican,"{1: 12, -1: 13}",0.0698642651576351,2,False,False
+5,5,1,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1}",True,export-administration-act-south-africa,republican,"{1: 14, -1: 15, 0: 16}",0.4954171910638967,2,True,True
+6,6,1,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 0}",True,,republican,{},0.0,2,False,True
+7,7,2,"{'physician-fee-freeze': 0, 'aid-to-nicaraguan-contras': 0}",True,,republican,{},0.0,2,False,True
+8,8,2,"{'physician-fee-freeze': 0, 'aid-to-nicaraguan-contras': 1}",True,,democrat,{},0.0,2,False,True
+9,9,3,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1}",True,education-spending,democrat,"{0: 17, -1: 18, 1: 19}",0.2686570623634117,2,False,False
+10,10,3,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': 1}",True,,democrat,{},0.0,2,False,True
+11,11,3,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': 0}",True,,democrat,{},0.0,2,False,True
+12,12,4,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': 1}",True,,republican,{},0.0,3,False,True
+13,13,4,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1}",True,mx-missile,republican,"{-1: 20, 1: 21}",0.5406324776463288,3,False,False
+14,14,5,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'export-administration-act-south-africa': 1}",True,adoption-of-the-budget-resolution,republican,"{-1: 22, 1: 23}",0.361850788012959,3,False,False
+15,15,5,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'export-administration-act-south-africa': -1}",True,,democrat,{},0.0,3,False,True
+16,16,5,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'export-administration-act-south-africa': 0}",True,,democrat,{},0.0,3,False,True
+17,17,9,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': 0}",True,,republican,{},0.0,3,False,True
+18,18,9,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': -1}",True,synfuels-corporation-cutback,democrat,"{-1: 24, 1: 25}",0.3315552752320583,3,True,True
+19,19,9,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': 1}",True,,democrat,{},0.0,3,False,True
+20,20,13,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': -1}",True,duty-free-exports,republican,"{-1: 26, 0: 27, 1: 28}",0.1112840420109725,4,False,False
+21,21,13,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': 1}",True,,democrat,{},0.0,4,False,True
+22,22,14,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'export-administration-act-south-africa': 1, 'adoption-of-the-budget-resolution': -1}",True,,republican,{},0.0,4,False,True
+23,23,14,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'export-administration-act-south-africa': 1, 'adoption-of-the-budget-resolution': 1}",True,anti-satellite-test-ban,republican,"{1: 29, -1: 30}",0.9999800684314308,4,False,False
+24,24,18,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': -1, 'synfuels-corporation-cutback': -1}",True,crime,republican,"{1: 31, -1: 32}",0.9999800684314308,4,True,True
+25,25,18,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': -1, 'synfuels-corporation-cutback': 1}",True,,democrat,{},0.0,4,False,True
+26,26,20,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': -1, 'duty-free-exports': -1}",True,adoption-of-the-budget-resolution,republican,"{1: 33, -1: 34}",0.1706097244411605,5,False,False
+27,27,20,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': -1, 'duty-free-exports': 0}",True,,republican,{},0.0,5,False,True
+28,28,20,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': -1, 'duty-free-exports': 1}",True,adoption-of-the-budget-resolution,republican,"{1: 35, -1: 36}",0.9999800684314308,5,False,False
+29,29,23,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'export-administration-act-south-africa': 1, 'adoption-of-the-budget-resolution': 1, 'anti-satellite-test-ban': 1}",True,,republican,{},0.0,5,False,True
+30,30,23,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': 1, 'export-administration-act-south-africa': 1, 'adoption-of-the-budget-resolution': 1, 'anti-satellite-test-ban': -1}",True,,democrat,{},0.0,5,False,True
+31,31,24,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': -1, 'synfuels-corporation-cutback': -1, 'crime': 1}",True,,republican,{},0.0,5,False,True
+32,32,24,"{'physician-fee-freeze': -1, 'adoption-of-the-budget-resolution': -1, 'education-spending': -1, 'synfuels-corporation-cutback': -1, 'crime': -1}",True,,democrat,{},0.0,5,False,True
+33,33,26,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': -1, 'duty-free-exports': -1, 'adoption-of-the-budget-resolution': 1}",True,anti-satellite-test-ban,republican,"{1: 37, -1: 38}",0.9999872275307352,6,False,False
+34,34,26,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': -1, 'duty-free-exports': -1, 'adoption-of-the-budget-resolution': -1}",True,,republican,{},0.0,6,False,True
+35,35,28,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': -1, 'duty-free-exports': 1, 'adoption-of-the-budget-resolution': 1}",True,,republican,{},0.0,6,False,True
+36,36,28,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': -1, 'duty-free-exports': 1, 'adoption-of-the-budget-resolution': -1}",True,,democrat,{},0.0,6,False,True
+37,37,33,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': -1, 'duty-free-exports': -1, 'adoption-of-the-budget-resolution': 1, 'anti-satellite-test-ban': 1}",True,,republican,{},0.0,7,False,True
+38,38,33,"{'physician-fee-freeze': 1, 'synfuels-corporation-cutback': -1, 'immigration': -1, 'mx-missile': -1, 'duty-free-exports': -1, 'adoption-of-the-budget-resolution': 1, 'anti-satellite-test-ban': -1}",True,,democrat,{},0.0,7,False,True

@@ -1,0 +1,23 @@
+,nodeID,parentNode,dataSetFilters,evaluated,nodeFeature,nodePrediction,childrenNodes,gainOrMSE,treeLevel,pruned,isLeaf
+0,0,-1,{},True,physician-fee-freeze,democrat,"{1: 1, 0: 2, -1: 3}",0.7146551075746124,0,False,False
+1,1,0,{'physician-fee-freeze': 1},True,el-salvador-aid,republican,"{1: 4, -1: 5}",0.1817325622274391,1,False,False
+2,2,0,{'physician-fee-freeze': 0},True,education-spending,democrat,"{1: 6, 0: 7, -1: 8}",0.4743428670325254,1,False,False
+3,3,0,{'physician-fee-freeze': -1},True,,democrat,{},0.0,1,False,True
+4,4,1,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1}",True,adoption-of-the-budget-resolution,republican,"{-1: 9, 1: 10}",0.0788772553330726,2,True,True
+5,5,1,"{'physician-fee-freeze': 1, 'el-salvador-aid': -1}",True,adoption-of-the-budget-resolution,republican,"{1: 11, -1: 12}",0.9999800684314308,2,False,False
+6,6,2,"{'physician-fee-freeze': 0, 'education-spending': 1}",True,,republican,{},0.0,2,False,True
+7,7,2,"{'physician-fee-freeze': 0, 'education-spending': 0}",True,,democrat,{},0.0,2,False,True
+8,8,2,"{'physician-fee-freeze': 0, 'education-spending': -1}",True,,democrat,{},0.0,2,False,True
+9,9,4,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': -1}",True,superfund-right-to-sue,republican,"{1: 13, -1: 14, 0: 15}",0.0892714313581534,3,False,False
+10,10,4,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': 1}",True,export-administration-act-south-africa,republican,"{1: 16, 0: 17}",0.5065717473859944,3,True,True
+11,11,5,"{'physician-fee-freeze': 1, 'el-salvador-aid': -1, 'adoption-of-the-budget-resolution': 1}",True,,republican,{},0.0,3,False,True
+12,12,5,"{'physician-fee-freeze': 1, 'el-salvador-aid': -1, 'adoption-of-the-budget-resolution': -1}",True,,democrat,{},0.0,3,False,True
+13,13,9,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': -1, 'superfund-right-to-sue': 1}",True,,republican,{},0.0,4,False,True
+14,14,9,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': -1, 'superfund-right-to-sue': -1}",True,,republican,{},0.0,4,False,True
+15,15,9,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': -1, 'superfund-right-to-sue': 0}",True,education-spending,republican,"{1: 18, -1: 19}",0.9999884024080972,4,False,False
+16,16,10,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': 1, 'export-administration-act-south-africa': 1}",True,,republican,{},0.0,4,False,True
+17,17,10,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': 1, 'export-administration-act-south-africa': 0}",True,aid-to-nicaraguan-contras,democrat,"{0: 20, -1: 21}",0.9999851670396316,4,False,False
+18,18,15,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': -1, 'superfund-right-to-sue': 0, 'education-spending': 1}",True,,republican,{},0.0,5,False,True
+19,19,15,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': -1, 'superfund-right-to-sue': 0, 'education-spending': -1}",True,,democrat,{},0.0,5,False,True
+20,20,17,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': 1, 'export-administration-act-south-africa': 0, 'aid-to-nicaraguan-contras': 0}",True,,republican,{},0.0,5,False,True
+21,21,17,"{'physician-fee-freeze': 1, 'el-salvador-aid': 1, 'adoption-of-the-budget-resolution': 1, 'export-administration-act-south-africa': 0, 'aid-to-nicaraguan-contras': -1}",True,,democrat,{},0.0,5,False,True

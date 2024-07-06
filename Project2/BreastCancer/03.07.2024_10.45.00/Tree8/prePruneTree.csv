@@ -1,0 +1,36 @@
+,nodeID,parentNode,dataSetFilters,evaluated,nodeFeature,nodePrediction,childrenNodes,gainOrMSE,treeLevel,pruned,isLeaf
+0,0,-1,{},True,Uniformity_of_cell_size,2,"{'belowMean': 1, 'aboveMean': 2}",0.7243454824508627,0,False,False
+1,1,0,{'Uniformity_of_cell_size': 'belowMean'},True,Bare_nuclei,2,"{'belowMean': 3, 'aboveMean': 4}",0.5026217525685616,1,False,False
+2,2,0,{'Uniformity_of_cell_size': 'aboveMean'},True,Clump_thickness,4,"{'belowMean': 5, 'aboveMean': 6}",0.047978399461289414,1,False,False
+3,3,1,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'belowMean'}",True,Single_epithelial_cell_size,2,"{'belowMean': 7, 'aboveMean': 8}",0.1331348052141197,2,False,False
+4,4,1,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean'}",True,Normal_nucleoli,4,"{'belowMean': 9, 'aboveMean': 10}",0.13730484219339567,2,False,False
+5,5,2,"{'Uniformity_of_cell_size': 'aboveMean', 'Clump_thickness': 'belowMean'}",True,Bare_nuclei,4,"{'belowMean': 11, 'aboveMean': 12}",0.3859793999289707,2,False,False
+6,6,2,"{'Uniformity_of_cell_size': 'aboveMean', 'Clump_thickness': 'aboveMean'}",True,,4,{},0.0,2,False,True
+7,7,3,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'belowMean', 'Single_epithelial_cell_size': 'belowMean'}",True,Uniformity_of_cell_shape,2,"{'belowMean': 13, 'aboveMean': 14}",0.27990657674592406,3,False,False
+8,8,3,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'belowMean', 'Single_epithelial_cell_size': 'aboveMean'}",True,Bland_chromatin,2,"{'belowMean': 15, 'aboveMean': 16}",0.9999872275307352,3,False,False
+9,9,4,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'belowMean'}",True,Bland_chromatin,2,"{'belowMean': 17, 'aboveMean': 18}",0.38368532150498263,3,False,False
+10,10,4,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'aboveMean'}",True,Single_epithelial_cell_size,4,"{'aboveMean': 19, 'belowMean': 20}",0.21469902647480027,3,False,False
+11,11,5,"{'Uniformity_of_cell_size': 'aboveMean', 'Clump_thickness': 'belowMean', 'Bare_nuclei': 'belowMean'}",True,Bland_chromatin,2,"{'aboveMean': 21, 'belowMean': 22}",0.9999800684314307,3,False,False
+12,12,5,"{'Uniformity_of_cell_size': 'aboveMean', 'Clump_thickness': 'belowMean', 'Bare_nuclei': 'aboveMean'}",True,,4,{},0.0,3,False,True
+13,13,7,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'belowMean', 'Single_epithelial_cell_size': 'belowMean', 'Uniformity_of_cell_shape': 'belowMean'}",True,,2,{},0.0,4,False,True
+14,14,7,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'belowMean', 'Single_epithelial_cell_size': 'belowMean', 'Uniformity_of_cell_shape': 'aboveMean'}",True,Mitoses,2,"{'belowMean': 23, 'aboveMean': 24}",0.9999851670396317,4,False,False
+15,15,8,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'belowMean', 'Single_epithelial_cell_size': 'aboveMean', 'Bland_chromatin': 'belowMean'}",True,,2,{},0.0,4,False,True
+16,16,8,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'belowMean', 'Single_epithelial_cell_size': 'aboveMean', 'Bland_chromatin': 'aboveMean'}",True,,4,{},0.0,4,False,True
+17,17,9,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'belowMean', 'Bland_chromatin': 'belowMean'}",True,Mitoses,2,"{'belowMean': 25, 'aboveMean': 26}",0.48719206575037977,4,False,False
+18,18,9,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'belowMean', 'Bland_chromatin': 'aboveMean'}",True,,4,{},0.0,4,False,True
+19,19,10,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'aboveMean', 'Single_epithelial_cell_size': 'aboveMean'}",True,Marginal_adhesion,4,"{'aboveMean': 27, 'belowMean': 28}",0.2740103071367113,4,False,False
+20,20,10,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'aboveMean', 'Single_epithelial_cell_size': 'belowMean'}",True,,4,{},0.0,4,False,True
+21,21,11,"{'Uniformity_of_cell_size': 'aboveMean', 'Clump_thickness': 'belowMean', 'Bare_nuclei': 'belowMean', 'Bland_chromatin': 'aboveMean'}",True,,2,{},0.0,4,False,True
+22,22,11,"{'Uniformity_of_cell_size': 'aboveMean', 'Clump_thickness': 'belowMean', 'Bare_nuclei': 'belowMean', 'Bland_chromatin': 'belowMean'}",True,,4,{},0.0,4,False,True
+23,23,14,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'belowMean', 'Single_epithelial_cell_size': 'belowMean', 'Uniformity_of_cell_shape': 'aboveMean', 'Mitoses': 'belowMean'}",True,,2,{},0.0,5,False,True
+24,24,14,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'belowMean', 'Single_epithelial_cell_size': 'belowMean', 'Uniformity_of_cell_shape': 'aboveMean', 'Mitoses': 'aboveMean'}",True,,4,{},0.0,5,False,True
+25,25,17,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'belowMean', 'Bland_chromatin': 'belowMean', 'Mitoses': 'belowMean'}",True,Marginal_adhesion,2,"{'belowMean': 29, 'aboveMean': 30}",0.33155527523205836,5,False,False
+26,26,17,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'belowMean', 'Bland_chromatin': 'belowMean', 'Mitoses': 'aboveMean'}",True,,4,{},0.0,5,False,True
+27,27,19,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'aboveMean', 'Single_epithelial_cell_size': 'aboveMean', 'Marginal_adhesion': 'aboveMean'}",True,Mitoses,2,"{'belowMean': 31, 'aboveMean': 32}",0.9999800684314307,5,False,False
+28,28,19,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'aboveMean', 'Single_epithelial_cell_size': 'aboveMean', 'Marginal_adhesion': 'belowMean'}",True,,4,{},0.0,5,False,True
+29,29,25,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'belowMean', 'Bland_chromatin': 'belowMean', 'Mitoses': 'belowMean', 'Marginal_adhesion': 'belowMean'}",True,,2,{},0.0,6,False,True
+30,30,25,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'belowMean', 'Bland_chromatin': 'belowMean', 'Mitoses': 'belowMean', 'Marginal_adhesion': 'aboveMean'}",True,Clump_thickness,2,"{'aboveMean': 33, 'belowMean': 34}",0.9999800684314307,6,False,False
+31,31,27,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'aboveMean', 'Single_epithelial_cell_size': 'aboveMean', 'Marginal_adhesion': 'aboveMean', 'Mitoses': 'belowMean'}",True,,2,{},0.0,6,False,True
+32,32,27,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'aboveMean', 'Single_epithelial_cell_size': 'aboveMean', 'Marginal_adhesion': 'aboveMean', 'Mitoses': 'aboveMean'}",True,,4,{},0.0,6,False,True
+33,33,30,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'belowMean', 'Bland_chromatin': 'belowMean', 'Mitoses': 'belowMean', 'Marginal_adhesion': 'aboveMean', 'Clump_thickness': 'aboveMean'}",True,,2,{},0.0,7,False,True
+34,34,30,"{'Uniformity_of_cell_size': 'belowMean', 'Bare_nuclei': 'aboveMean', 'Normal_nucleoli': 'belowMean', 'Bland_chromatin': 'belowMean', 'Mitoses': 'belowMean', 'Marginal_adhesion': 'aboveMean', 'Clump_thickness': 'belowMean'}",True,,4,{},0.0,7,False,True

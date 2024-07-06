@@ -43,71 +43,19 @@ if __name__ == '__main__':
     # define whether it is a regression
     regression = False
 
-    # ----------------------Create Tree-----------------------------
-    # Get the current timestamp and create our own unique new directory
-    testFolder = aux.createTrees(dataTitle=dataTitle, dataSet=dataSet, featuresMap=featuresMap, isReg=regression)
+    # ----------------------Tests-----------------------------
+    # create trees and return our test folder
+    # testFolder = aux.runTreeCreation(dataTitle=dataTitle, dataSet=dataSet, featuresMap=featuresMap, isReg=regression)
 
-    # ------------------------Reset current test Folder----------------
-    currentTestDir = testFolder
-    # currentTestFolder = dataTitle + "/01.07.2024_12.07.34"
+    # test folder can either be passed from previous function or it can
+    # currentTestDir = testFolder
+    currentTestDir = dataTitle + "/UsedTestCases"
 
-    # -----------------------Prune Tree------------------------------
-    for currentTreeID in range(1, 11):
-        currentTreeFolder = currentTestFolder + "/Tree" + str(currentTreeID)
+    # prune trees
+    # aux.runTreePruning(dataTitle=dataTitle, featuresMap=featuresMap, isReg=regression, currentDir=currentTestDir)
 
-        treeTable = pd.read_csv(currentTreeFolder + "/prePruneTree.csv")
-        trainSet = pd.read_csv(currentTreeFolder + "/trainData.csv")
-        pruneSet = pd.read_csv(currentTreeFolder + "/pruneData.csv")
-        prunedTreeFileName = currentTreeFolder + "/pruneTree.csv"
+    # test prePruned
+    aux.runTreeTests(dataTitle=dataTitle, featuresMap=featuresMap, isReg=regression, currentDir=currentTestDir, isPrune=False)
 
-        prunedTree = TreeClass.Tree(dataName=dataTitle, isRegression=regression, featuresMap=featuresMap, dataSet=trainSet, existingTree=treeTable)
-
-        newPrunedTree = aux.pruneTree(prunedTree=prunedTree, pruneSet=pruneSet)
-
-        newPrunedTree.treeTable.to_csv(prunedTreeFileName, index=True)
-
-    # -----------------------Test Full Tree--------------------------
-    prePrunedTestResults = pd.DataFrame()
-
-    for currentTreeID in range(1, 11):
-        currentTreeFolder = currentTestFolder + "/Tree" + str(currentTreeID)
-        currentTestResultsFile = currentTestFolder + "/TestResults/prePrunedTreeResults.csv"
-
-        treeTable = pd.read_csv(currentTreeFolder + "/prePruneTree.csv", index_col=0)
-        trainSet = pd.read_csv(currentTreeFolder + "/trainData.csv", index_col=0)
-        testSet = pd.read_csv(currentTreeFolder + "/testData.csv", index_col=0)
-
-        prePruneTree = TreeClass.Tree(dataName=dataTitle, isRegression=regression, featuresMap=featuresMap, dataSet=trainSet, existingTree=treeTable)
-
-        testResult = aux.testTree(currentTree=prePruneTree, testSet=testSet)
-
-        testResult['treeID'] = currentTreeID
-
-        prePrunedTestResults = pd.concat([prePrunedTestResults, testResult])
-
-        prePrunedTestResults.to_csv(currentTestResultsFile, index=True)
-
-        print(testResult['success'].mean())
-
-    # -----------------------Test Pruned Tree------------------------
-    prunedTestResults = pd.DataFrame()
-
-    for currentTreeID in range(1, 11):
-        currentTreeFolder = currentTestFolder + "/Tree" + str(currentTreeID)
-        currentTestResultsFile = currentTestFolder + "/TestResults/prunedTreeResults.csv"
-
-        treeTable = pd.read_csv(currentTreeFolder + "/pruneTree.csv", index_col=0)
-        trainSet = pd.read_csv(currentTreeFolder + "/trainData.csv", index_col=0)
-        testSet = pd.read_csv(currentTreeFolder + "/testData.csv", index_col=0)
-
-        pruneTree = TreeClass.Tree(dataName=dataTitle, isRegression=regression, featuresMap=featuresMap, dataSet=trainSet, existingTree=treeTable)
-
-        testResult = aux.testTree(currentTree=pruneTree, testSet=testSet)
-
-        testResult['treeID'] = currentTreeID
-
-        prunedTestResults = pd.concat([prunedTestResults, testResult])
-
-        prePrunedTestResults.to_csv(currentTestResultsFile, index=True)
-
-        print(testResult['success'].mean())
+    # test postPruned
+    aux.runTreeTests(dataTitle=dataTitle, featuresMap=featuresMap, isReg=regression, currentDir=currentTestDir, isPrune=True)

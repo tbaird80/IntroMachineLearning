@@ -7,6 +7,9 @@ from datetime import datetime
 
 def runTreeCreation(dataTitle, dataSet, featuresMap, isReg):
 
+    # print start message of function
+    print("***STARTING TREE CREATION: " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "***")
+
     # create directory based on current data set and timestamp
     currentTimestamp = datetime.now()
     timestampStr = currentTimestamp.strftime("%d.%m.%Y_%I.%M.%S")
@@ -41,6 +44,9 @@ def runTreeCreation(dataTitle, dataSet, featuresMap, isReg):
         pruneDataFileName = tree1DataDirectory + "/pruneData.csv"
         pruneSet.to_csv(pruneDataFileName, index=True)
 
+        # print status update
+        print(dataTitle + " Tree " + str(currentTreeID) + " CREATED: " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S"))
+
         # create tree 2 of current iteration
         prePruneTree2 = TreeClass.Tree(dataName=dataTitle, isRegression=isReg, featuresMap=featuresMap, dataSet=trainSet2)
 
@@ -54,6 +60,9 @@ def runTreeCreation(dataTitle, dataSet, featuresMap, isReg):
         pruneDataFileName = tree2DataDirectory + "/pruneData.csv"
         pruneSet.to_csv(pruneDataFileName, index=True)
 
+        # print status update
+        print(dataTitle + " Tree " + str(currentTreeID + 1) + " CREATED: " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S"))
+
         # increment our tree ID by 2
         currentTreeID += 2
 
@@ -63,15 +72,18 @@ def runTreeCreation(dataTitle, dataSet, featuresMap, isReg):
 
 def runTreePruning(dataTitle, featuresMap, isReg, currentDir):
 
+    # print start message of function
+    print("***STARTING PRUNING: " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "***")
+
     # iterate through all 10 trees created
     for currentTreeID in range(1, 11):
         # find next tree folder
         currentTreeFolder = currentDir + "/Tree" + str(currentTreeID)
 
         # grab relevant data to restore tree
-        treeTable = pd.read_csv(currentTreeFolder + "/prePruneTree.csv")
-        trainSet = pd.read_csv(currentTreeFolder + "/trainData.csv")
-        pruneSet = pd.read_csv(currentTreeFolder + "/pruneData.csv")
+        treeTable = pd.read_csv(currentTreeFolder + "/prePruneTree.csv", index_col=0)
+        trainSet = pd.read_csv(currentTreeFolder + "/trainData.csv", index_col=0)
+        pruneSet = pd.read_csv(currentTreeFolder + "/pruneData.csv", index_col=0)
 
         # restore and prune tree
         prunedTree = TreeClass.Tree(dataName=dataTitle, isRegression=isReg, featuresMap=featuresMap, dataSet=trainSet, existingTree=treeTable)
@@ -81,17 +93,30 @@ def runTreePruning(dataTitle, featuresMap, isReg, currentDir):
         prunedTreeFileName = currentTreeFolder + "/postPruneTree.csv"
         newPrunedTree.treeTable.to_csv(prunedTreeFileName, index=True)
 
+        # print status update
+        print(dataTitle + " Tree " + str(currentTreeID) + " PRUNED: " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S"))
+
     # print success message
-    print("Trees pruned at: " + currentDir)
+    print("All " + dataTitle + " trees pruned at: " + currentDir)
 
 def runTreeTests(dataTitle, featuresMap, isReg, currentDir, isPrune):
+
+    # print start message of function
+    if isPrune:
+        print("***STARTING POST-PRUNE TESTS: " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "***")
+    else:
+        print("***STARTING PRE-PRUNE TESTS: " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "***")
 
     # init our test results output
     fullTestResults = pd.DataFrame()
 
+    # find our test directory, create if it does not exist yet
+    testResultDirectory = currentDir + "/TestResults"
+    if not os.path.exists(testResultDirectory):
+        os.makedirs(testResultDirectory)
+
     # iterate through all 10 trees
     for currentTreeID in range(1, 11):
-
         # grab current tree folder
         currentTreeFolder = currentDir + "/Tree" + str(currentTreeID)
 
@@ -102,10 +127,10 @@ def runTreeTests(dataTitle, featuresMap, isReg, currentDir, isPrune):
         # grab the tree needed, whether we are looking at prune tree or full tree
         if isPrune:
             treeTable = pd.read_csv(currentTreeFolder + "/postPruneTree.csv", index_col=0)
-            currentTestResultsFile = currentDir + "/TestResults/postPrunedTreeResults.csv"
+            currentTestResultsFile = testResultDirectory + "/postPrunedTreeResults.csv"
         else:
             treeTable = pd.read_csv(currentTreeFolder + "/prePruneTree.csv", index_col=0)
-            currentTestResultsFile = currentDir + "/TestResults/prePrunedTreeResults.csv"
+            currentTestResultsFile = testResultDirectory + "/prePrunedTreeResults.csv"
 
         # restore the tree and test it
         currentTree = TreeClass.Tree(dataName=dataTitle, isRegression=isReg, featuresMap=featuresMap, dataSet=trainSet, existingTree=treeTable)
@@ -118,14 +143,17 @@ def runTreeTests(dataTitle, featuresMap, isReg, currentDir, isPrune):
         fullTestResults = pd.concat([fullTestResults, testResult])
         fullTestResults.to_csv(currentTestResultsFile, index=True)
 
+        # print status update
+        print(dataTitle + " Tree " + str(currentTreeID) + " TESTED: " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S"))
+
     # update output message depending on the pruned nature of the tree
     if isPrune:
-        outputMessage = "Full success rate of pruned trees: "
+        outputMessage = "Full success rate of post-pruned trees: "
     else:
         outputMessage = "Full success rate of pre-pruned trees: "
 
     # output the success message with metrics
-    print(outputMessage + fullTestResults['success'].mean())
+    print(outputMessage + str(fullTestResults['success'].mean()))
     print(fullTestResults[['treeID', 'success']].groupby(['treeID'], as_index=False).mean('success'))
 
 def splitDataFrame(dataSet, splitPercentage, isReg):
@@ -223,6 +251,11 @@ def pruneTree(prunedTree, pruneSet):
     keepPruning = True
     loopCounter = 0
 
+    notLeaves = prunedTree.treeTable[['isLeaf']].value_counts()[False]
+    # numForcedPrune = notLeaves * .2
+
+    numForcedPrune = 1
+
     while keepPruning:
         newPrunedTree = copy.deepcopy(prunedTree)
 
@@ -234,7 +267,14 @@ def pruneTree(prunedTree, pruneSet):
         testResult = testTree(currentTree=newPrunedTree, testSet=pruneSet)
         currentSuccessRate = testResult['success'].mean()
 
-        if prevSuccessRate > currentSuccessRate and loopCounter > 1:
+        if prunedTree.isReg:
+            degradedPerformance = prevSuccessRate < currentSuccessRate
+        else:
+            degradedPerformance = prevSuccessRate > currentSuccessRate
+
+        if degradedPerformance and loopCounter > numForcedPrune:
+            keepPruning = False
+        elif nodeToPrune == 0:
             keepPruning = False
         else:
             prunedTree = newPrunedTree
@@ -260,16 +300,18 @@ def findNextNode(currentTree, currentNodeID, testRecord):
 
     # copy over our data and filter accordingly
     currentDataSubset = currentTree.trainData.copy()
-    for currentFeature, featureType in currentNodeFilters.items():
-        currentDataSubset = currentDataSubset[currentDataSubset[currentFeature] == featureType]
+    for currentFeatureFilter, featureType in currentNodeFilters.items():
+        currentDataSubset = currentDataSubset[currentDataSubset[currentFeatureFilter] == featureType]
 
     # if the feature is a numeric value, need to create the relevant mean value to compare our value to
     if currentTree.featuresTypeMap[currentFeature] == 'Num':
         # find mean of train set
         trainMean = currentDataSubset[currentFeature].mean()
 
-        # pick the branch based on its measure relative to the mean
-        if trainMean > testRecord[currentFeature]:
+        # pick the branch based on its measure relative to the mean, unless only one path in which case take the one path
+        if len(currentChildren) == 1:
+            branchToTake = list(currentChildren.keys())[0]
+        elif trainMean > testRecord[currentFeature]:
             branchToTake = 'belowMean'
         else:
             branchToTake = 'aboveMean'

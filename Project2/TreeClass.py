@@ -58,13 +58,10 @@ class Tree:
 
         # adjust our continuous variables relative to the mean of the train set at this point
         for featureToAdjust in allFeatures:
-
             # adjust if a numeric feature
             if self.featuresTypeMap[featureToAdjust] == 'Num':
-                # find mean of train set
+                # find mean of train set, update the values to either above or below mean to show binary split
                 currentMean = currentDataSet[featureToAdjust].mean()
-
-                # update the values to either above or below mean to show binary split
                 currentDataSet.loc[:, featureToAdjust] = np.where(currentDataSet[featureToAdjust] > currentMean, 'aboveMean', 'belowMean')
 
         # filter out the data as needed
@@ -173,7 +170,7 @@ class Tree:
             regressionEstimateByClass.rename(columns={"Class": "estimatedOutput"}, inplace=True)
 
             # merge in the regression estimate for each of the possible values
-            mseCalc = meltedDataSet.merge(regressionEstimateByClass, how='left', on=['Class', 'Variable', 'Value'])
+            mseCalc = meltedDataSet.merge(regressionEstimateByClass, how='left', on=['Variable', 'Value'])
 
             # calc our MSE
             mseCalc['gainOrMSE'] = (mseCalc['estimatedOutput'] - mseCalc['Class']) ** 2

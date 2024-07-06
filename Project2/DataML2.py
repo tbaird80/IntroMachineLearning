@@ -27,7 +27,7 @@ def dataSourcing(dataName):
             dataTargets = pd.read_csv(targetPath, index_col=0)
 
         else:
-            print(dataName + "data does not exist, reading from source")
+            print(dataName + " data does not exist, reading from source")
 
             # fetch dataset
             breast_cancer_wisconsin_original = fetch_ucirepo(id=15)
@@ -243,7 +243,7 @@ def dataSourcing(dataName):
             dataTargets = pd.read_csv(targetPath, index_col=0)
 
         else:
-            print(dataName + "data does not exist, reading from source")
+            print(dataName + " data does not exist, reading from source")
 
             # fetch dataset
             computer_hardware = fetch_ucirepo(id=29)
@@ -281,7 +281,7 @@ def dataSourcing(dataName):
             dataTargets = pd.read_csv(targetPath, index_col=0)
 
         else:
-            print(dataName + "data does not exist, reading from source")
+            print(dataName + " data does not exist, reading from source")
 
             # fetch dataset
             forest_fires = fetch_ucirepo(id=162)
