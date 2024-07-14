@@ -6,12 +6,12 @@ import TreeClass
 import AuxML2 as aux
 
 if __name__ == '__main__':
-    '''
+    """
     This is our main function for the Forest Fire test set. It will define, prune, and test the set to return an effectiveness
     value for the decision tree algorithm. If you would like to run yourself, I would recommend doing so in chunks. Create full tree first,
     prune tree, test full tree, test prune tree, and then compare results.
 
-    '''
+    """
     # function inputs
     # data set title
     dataTitle = 'ForestFires'
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     # test folder can either be passed from previous function or it can
     # currentTestDir = testFolder
-    currentTestDir = dataTitle + "/UsedTestCases_COPY"
+    currentTestDir = dataTitle + "/UsedTestCases"
 
     # prune trees
     aux.runTreePruning(dataTitle=dataTitle, featuresMap=featuresMap, isReg=regression, currentDir=currentTestDir)

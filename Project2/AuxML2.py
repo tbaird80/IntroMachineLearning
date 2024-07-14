@@ -6,6 +6,16 @@ import os
 from datetime import datetime
 
 def runTreeCreation(dataTitle, dataSet, featuresMap, isReg):
+    """
+    A wrapper function that will create our original fully grown trees. It will create and store 10 trees along with the data sets that were used for training
+    and the ones that will be used for pruning and testing.
+
+    @param dataTitle: the overall data set for which we are working on
+    @param dataSet: the dataset for which we will train our tree on
+    @param featuresMap: the user defined mapping of the feature data types
+    @param isReg: whether the tree is a regression tree or not
+    @return: the directory for which our trees will be stored
+    """
 
     # print start message of function
     print("***STARTING TREE CREATION: " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "***")
@@ -71,6 +81,14 @@ def runTreeCreation(dataTitle, dataSet, featuresMap, isReg):
     return uniqueTestDir
 
 def runTreePruning(dataTitle, featuresMap, isReg, currentDir):
+    """
+    Wrapper function that will take our fully grown trees and prune them to improve generality of our predictions.
+
+    @param dataTitle: the data set for which we are testing
+    @param featuresMap: the user defined mapping of the feature data types
+    @param isReg: whether we are looking at a regression tree
+    @param currentDir: the directory where the fully grown trees are stored
+    """
 
     # print start message of function
     print("***STARTING PRUNING: " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "***")
@@ -100,6 +118,15 @@ def runTreePruning(dataTitle, featuresMap, isReg, currentDir):
     print("All " + dataTitle + " trees pruned at: " + currentDir)
 
 def runTreeTests(dataTitle, featuresMap, isReg, currentDir, isPrune):
+    """
+    Wrapper function to test both our fully grown and pruned trees.
+
+    @param dataTitle: the data set for which we are testing
+    @param featuresMap: the user defined mapping of the feature data types
+    @param isReg: whether we are looking at a regression tree
+    @param currentDir: the directory where our testable trees are stored
+    @param isPrune: whether the test is on a pruned tree or a fully grown tree
+    """
 
     # print start message of function
     if isPrune:
@@ -214,30 +241,39 @@ def testTree(currentTree, testSet):
     @return: the node that it reached
     """
 
+    # set default prediction based on whether it will be a numeric outcome (reg) or character outcome (non-reg)
     if currentTree.isReg is True:
         defaultPrediction = 0
     else:
         defaultPrediction = ''
 
+    # copy over our test set, init our output columns
     testResult = testSet.copy()
     testResult['leafDecisionNode'] = 0
     testResult['leafParentNode'] = 0
     testResult['classPrediction'] = defaultPrediction
 
+    # iterate through all of our test cases
     for rowIndex in testResult.index.tolist():
 
+        # start at the root
         currentNodeID = 0
+
+        # init our check for if we reach a leaf to grab prediction from
         reachedLeaf = currentTree.treeTable.loc[currentNodeID, 'isLeaf']
 
+        # iterate through the tree until we find a leaf
         while not reachedLeaf:
             currentNodeID = findNextNode(currentTree, currentNodeID, testResult.loc[rowIndex])
             reachedLeaf = currentTree.treeTable.loc[currentNodeID, 'isLeaf']
 
+        # once we reach leaf, set the output values based on that leaf node
         currentLeaf = currentNodeID
         testResult.loc[rowIndex, 'leafDecisionNode'] = currentLeaf
         testResult.loc[rowIndex, 'leafParentNode'] = currentTree.treeTable.loc[currentLeaf, 'parentNode']
         testResult.loc[rowIndex, 'classPrediction'] = currentTree.treeTable.loc[currentLeaf, 'nodePrediction']
 
+    # set success metric depending on whether it is reg or not
     if currentTree.isReg is True:
         testResult['success'] = (testResult['classPrediction'] - testResult['Class'])**2
     else:
@@ -246,36 +282,71 @@ def testTree(currentTree, testSet):
     return testResult
 
 def pruneTree(prunedTree, pruneSet):
+    """
+    The function that will prune the passed in tree until performance begins to degrade.
+
+    @param prunedTree: the tree to be pruned
+    @param pruneSet: the data set that we are testing our result on
+    @return: the pruned tree
+    """
+
+    # test tree and store down its performance as our starting point
     testResult = testTree(currentTree=prunedTree, testSet=pruneSet)
     prevSuccessRate = testResult['success'].mean()
+
+    # init some loop control variables
     keepPruning = True
     loopCounter = 0
 
-    notLeaves = prunedTree.treeTable[['isLeaf']].value_counts()[False]
+    # -----------------------------------------------------------------------------------------------------------------------------------------------
+    # These are levers that we can pull depending on if we just want the pruning to have small forced amount (at least one) or a larger forced amount
+    # (aim for 20% of prune-able nodes). These are somewhat arbitrary levers, but they do help in forcing the tree to prune to show a more generalized
+    # model relative to the fully grown tree.
+    # -----------------------------------------------------------------------------------------------------------------------------------------------
+    # LEVER 1: at least 1
+    numForcedPrune = 0
+
+    # LEVER 2: aim for 20%
+    # notLeaves = prunedTree.treeTable[['isLeaf']].value_counts()[False]
     # numForcedPrune = notLeaves * .2
+    # -----------------------------------------------------------------------------------------------------------------------------------------------
 
-    numForcedPrune = 1
-
+    # continue pruning until otherwise set
     while keepPruning:
+        # hard copy our current pruned tree to preserve previous pruning attempt
         newPrunedTree = copy.deepcopy(prunedTree)
 
+        # see which node we should prune based on the set of children nodes that performed worst. We will prune at its parent
         parentNodeSuccessRate = testResult[['leafParentNode', 'success']].groupby(['leafParentNode'], as_index=False).mean('success')
-        nodeToPrune = parentNodeSuccessRate.nsmallest(1, 'success').iat[0, 0]
+
+        # if regression tree, worst performing is largest MSE
+        if prunedTree.isReg:
+            nodeToPrune = parentNodeSuccessRate.nlargest(1, 'success').iat[0, 0]
+        # otherwise, worst performance is lowest success rate
+        else:
+            nodeToPrune = parentNodeSuccessRate.nsmallest(1, 'success').iat[0, 0]
+
+        # prune the node, set as leaf
         newPrunedTree.treeTable.loc[nodeToPrune, 'pruned'] = True
         newPrunedTree.treeTable.loc[nodeToPrune, 'isLeaf'] = True
 
+        # test the pruned tree and store its success rate
         testResult = testTree(currentTree=newPrunedTree, testSet=pruneSet)
         currentSuccessRate = testResult['success'].mean()
 
+        # test for degradation as higher MSE in reg or lower success rate in non-reg
         if prunedTree.isReg:
             degradedPerformance = prevSuccessRate < currentSuccessRate
         else:
             degradedPerformance = prevSuccessRate > currentSuccessRate
 
+        # set our stopping points as both performance degraded and we had performed our required number of pruned nodes
         if degradedPerformance and loopCounter > numForcedPrune:
             keepPruning = False
+        # an extra stopping point would be if we hit the root as the node to prune
         elif nodeToPrune == 0:
             keepPruning = False
+        # otherwise, point our current pruned tree to the new pruned tree, reset comparison success rate, and increment loop counter
         else:
             prunedTree = newPrunedTree
             prevSuccessRate = currentSuccessRate
@@ -301,7 +372,22 @@ def findNextNode(currentTree, currentNodeID, testRecord):
     # copy over our data and filter accordingly
     currentDataSubset = currentTree.trainData.copy()
     for currentFeatureFilter, featureType in currentNodeFilters.items():
-        currentDataSubset = currentDataSubset[currentDataSubset[currentFeatureFilter] == featureType]
+
+        # if the current feature filter is a numeric, then we need to adjust by the train data's mean
+        if currentTree.featuresTypeMap[currentFeatureFilter] == 'Num':
+
+            # grab train data mean
+            currentFeatureTrainMean = currentDataSubset[currentFeatureFilter].mean()
+
+            # check versus the mean depending on the given filter
+            if featureType == 'aboveMean':
+                currentDataSubset = currentDataSubset[currentDataSubset[currentFeatureFilter] > currentFeatureTrainMean]
+            else:
+                currentDataSubset = currentDataSubset[currentDataSubset[currentFeatureFilter] < currentFeatureTrainMean]
+
+        # otherwise just match the value provided to filter
+        else:
+            currentDataSubset = currentDataSubset[currentDataSubset[currentFeatureFilter] == featureType]
 
     # if the feature is a numeric value, need to create the relevant mean value to compare our value to
     if currentTree.featuresTypeMap[currentFeature] == 'Num':

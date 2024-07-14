@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     # test folder can either be passed from previous function or it can
     # currentTestDir = testFolder
-    currentTestDir = dataTitle + "/UsedTestCases"
+    currentTestDir = dataTitle + "/03.07.2024_09.33.52"
 
     # prune trees
     # aux.runTreePruning(dataTitle=dataTitle, featuresMap=featuresMap, isReg=regression, currentDir=currentTestDir)
@@ -58,4 +58,4 @@ if __name__ == '__main__':
     aux.runTreeTests(dataTitle=dataTitle, featuresMap=featuresMap, isReg=regression, currentDir=currentTestDir, isPrune=False)
 
     # test postPruned
-    aux.runTreeTests(dataTitle=dataTitle, featuresMap=featuresMap, isReg=regression, currentDir=currentTestDir, isPrune=True)
+    # aux.runTreeTests(dataTitle=dataTitle, featuresMap=featuresMap, isReg=regression, currentDir=currentTestDir, isPrune=True)

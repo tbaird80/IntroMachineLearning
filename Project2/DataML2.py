@@ -5,9 +5,10 @@ import os
 
 def dataSourcing(dataName):
     """
+    Source the relevant dataset either locally or remotely depending on it has been sourced previously.
 
-    @param dataName:
-    @return:
+    @param dataName: the data set that we would like to source
+    @return: the data set features and the data set targets
     """
 
     if not os.path.exists(dataName):
