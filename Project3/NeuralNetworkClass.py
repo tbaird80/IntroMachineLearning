@@ -3,10 +3,11 @@ import numpy as np
 
 
 class NNet:
-    def __init__(self, dataSetName, isRegression, trainingData, numHiddenLayers, numHiddenLayerNodes):
+    def __init__(self, dataSetName, isRegression, trainingData, normalCols, numHiddenLayers, numHiddenLayerNodes):
         # set variables that define the network
         self.dataName = dataSetName
         self.isReg = isRegression
+        self.normalCols = normalCols
 
         # data to train on
         self.trainData = trainingData.copy()
@@ -56,34 +57,63 @@ class NNet:
             'nodeName': [nodeName],
             'nodeLayer': [nodeLayer],
             'weightMap': [weightMap],
-            'currentValue': [0],
-            'currentError': [0]
+            'currentInputs': [[]],
+            'currentOutputs': [[]],
+            'currentErrors': [[]]
         }, index=[len(self.network)])
 
         self.network = pd.concat([self.network, newRow])
 
-    def testNetwork(self, currentInputRecord):
-
+    def testRecord(self, currentInputRecord):
+        # grab all layers to iterate through, removing the first as an option
         layerIndices = self.network['nodeLayer'].unique().tolist()
         layerIndices.remove(0)
 
+        # find the current class to compare against, then remove that column from the record
         currentClass = currentInputRecord['Class'].iloc[0]
         currentInputRecord = currentInputRecord.drop(['Class'], axis=1)
 
+        # update our input layers
+        inputIndex = self.network[self.network['nodeLayer'] == 0].index.tolist()
+        for currentIndex in inputIndex:
+            currentName = self.network.loc[currentIndex, 'nodeName']
+            self.network.loc[currentIndex, 'currentOutputs'].append(currentInputRecord[currentName].iloc[0])
+
         for currentLayer in layerIndices:
+            # find the nodes relevant to that layer
             currentLayerNodes = self.network[self.network['nodeLayer'] == currentLayer]
 
+            # grab previous layer outputs
+            prevLayerOutputs = self.network[self.network['nodeLayer'] == currentLayer - 1][['nodeName', 'currentOutputs']].set_index('nodeName')
+            prevLayerOutputs['currentOutputs'] = prevLayerOutputs['currentOutputs'].apply(lambda x: x[-1])
+            # iterate through all the nodes in that layer
             for currentNode in currentLayerNodes.index.tolist():
+
+                # grab the current weight map
                 weightMap = self.network.loc[currentNode, 'weightMap']
 
+                # convert the weight map to a dataframe
                 dictionaryTable = pd.DataFrame.from_dict(weightMap, orient='index')
 
-                mappingTable = pd.concat([currentInputRecord.iloc[0], dictionaryTable], axis=1)
+                # combine our weight map to our input values
+                mappingTable = pd.concat([prevLayerOutputs, dictionaryTable], axis=1)
                 mappingTable.columns = ['Inputs', 'Weights']
 
-                self.network.loc[currentNode, 'currentValue'] = (mappingTable['Inputs'] * mappingTable['Weights']).sum()
+                self.network.loc[currentNode, 'currentInputs'].append((mappingTable['Inputs'] * mappingTable['Weights']).sum())
 
-                if self.isReg:
-                    self.network.loc[currentNode, 'currentError'] = (self.network.loc[currentNode, 'currentValue'] - currentClass)**2
+                # find the output
+                if currentLayer == layerIndices.max():
+                    if self.isReg:
+                        self.network.loc[currentNode, 'currentOutputs'].append((mappingTable['Inputs'] * mappingTable['Weights']).sum())
+                        self.network.loc[currentNode, 'currentError'].append((self.network.loc[currentNode, 'currentValue'] - currentClass)**2)
+                    # TODO: fix the logic for classification
+                    else:
+                        self.network.loc[currentNode, 'currentOutputs'].append((mappingTable['Inputs'] * mappingTable['Weights']).sum())
+                        self.network.loc[currentNode, 'currentError'] = self.network.loc[currentNode, 'currentValue'] == currentClass
                 else:
-                    self.network.loc[currentNode, 'currentError'] = self.network.loc[currentNode, 'currentValue'] == currentClass
+                    if self.isReg:
+                        self.network.loc[currentNode, 'currentOutputs'].append((mappingTable['Inputs'] * mappingTable['Weights']).sum())
+                    # TODO: fix the logic for classification
+                    else:
+                        self.network.loc[currentNode, 'currentOutputs'].append((mappingTable['Inputs'] * mappingTable['Weights']).sum())
+

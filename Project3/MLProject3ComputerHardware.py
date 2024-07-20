@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 import pandas as pd
 import NeuralNetworkClass as network
+import AuxML3 as aux
 
 
 if __name__ == '__main__':
@@ -12,6 +13,7 @@ if __name__ == '__main__':
     prune tree, test full tree, test prune tree, and then compare results.
 
     """
+    pd.set_option('display.max_columns', None)
     # function inputs
     # data set title
     dataTitle = 'ComputerHardware'
@@ -23,15 +25,22 @@ if __name__ == '__main__':
     # define whether it is a regression
     regression = True
 
-    # train set
-    trainSet = dataSet.iloc[[0]]
+    # define the columns that need to be normalized
+    normalCol = ['MYCT', 'MMIN', 'MMAX', 'CACH', 'CHMIN', 'CHMAX']
+
+    # split into tune, test, and train sets
+    tuneSet, trainTestSet = aux.splitDataFrame(dataSet, .2, regression)
+    trainSet, testSet = aux.splitDataFrame(trainTestSet, .5, regression)
+
+    normalizeDataSet = trainSet.copy()
+    aux.normalizeNumberValues(tuneSet, normalizeDataSet, normalCol)
+    aux.normalizeNumberValues(trainSet, normalizeDataSet, normalCol)
+    aux.normalizeNumberValues(testSet, normalizeDataSet, normalCol)
 
     # create our neural network
-    basicRegression = network.NNet(dataSetName=dataTitle, isRegression=regression, trainingData=trainSet, numHiddenLayers=0, numHiddenLayerNodes=0)
+    basicRegression = network.NNet(dataSetName=dataTitle, isRegression=regression, trainingData=trainSet, normalCols=normalCol, numHiddenLayers=2, numHiddenLayerNodes=3)
 
     # test our neural network
-    basicRegression.testNetwork(trainSet)
+    basicRegression.testRecord(trainSet.iloc[[0]])
 
     print(basicRegression.network)
-
-    #outputValue = basicRegression.testMe()
