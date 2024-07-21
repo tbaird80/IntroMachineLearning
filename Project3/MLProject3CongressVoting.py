@@ -15,17 +15,17 @@ if __name__ == '__main__':
     pd.set_option('display.max_columns', None)
     # function inputs
     # data set title
-    dataTitle = 'ComputerHardware'
+    dataTitle = 'CongressVoting'
 
     # grab data
     features, targets = DataML3.dataSourcing(dataTitle)
     dataSet = features.join(targets)
 
     # define whether it is a regression
-    regression = True
+    regression = False
 
     # define the columns that need to be normalized
-    normalCol = ['MYCT', 'MMIN', 'MMAX', 'CACH', 'CHMIN', 'CHMAX']
+    normalCol = []
 
     # split into tune, test, and train sets
     tuneSet, trainTestSet = aux.splitDataFrame(dataSet, .2, regression)
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     print(trainSet.iloc[[0]])
 
-    simpleNetwork.testRecord(trainSet.iloc[[0]])
+    simpleNetwork.forwardPass(trainSet.iloc[[0]])
 
     print(simpleNetwork.network)
 
@@ -51,6 +51,6 @@ if __name__ == '__main__':
                                   normalCols=normalCol, numHiddenLayers=2, numHiddenLayerNodes=3, networkType="BackPro")
 
     # test our neural network
-    backProNetwork.testRecord(trainSet.iloc[[0]])
+    backProNetwork.forwardPass(trainSet.iloc[[0]])
 
     print(backProNetwork.network)

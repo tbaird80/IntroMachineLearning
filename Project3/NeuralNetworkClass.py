@@ -1,13 +1,17 @@
 import pandas as pd
 import numpy as np
-
+import math
+import random
 
 class NNet:
-    def __init__(self, dataSetName, isRegression, trainingData, normalCols, numHiddenLayers, numHiddenLayerNodes):
+    def __init__(self, dataSetName, isRegression, trainingData, normalCols, numHiddenLayers, numHiddenLayerNodes, networkType):
         # set variables that define the network
         self.dataName = dataSetName
         self.isReg = isRegression
         self.normalCols = normalCols
+        self.numHiddenLayers = numHiddenLayers
+        self.numHiddenLayersNodes = numHiddenLayerNodes
+        self.networkType = networkType
 
         # data to train on
         self.trainData = trainingData.copy()
@@ -38,18 +42,22 @@ class NNet:
 
         # create output layer
         outputLayerID = numHiddenLayers + 1
-        newWeightMap = {}
 
+        # create mapping to previous layer with weights randomly created starting with intercept
+        newWeightMap = {'Intercept': random.uniform(-.01, .01)}
         prevNodeNames = self.network[self.network['nodeLayer'] == (outputLayerID - 1)]['nodeName'].tolist()
         for currentPrevName in prevNodeNames:
-            newWeightMap[currentPrevName] = .1
+            newWeightMap[currentPrevName] = random.uniform(-.01, .01)
 
         if self.isReg:
             self.createNode(nodeName='OutputNode1', nodeLayer=outputLayerID, weightMap=newWeightMap)
         else:
             possibleOutputs = self.trainData['Class'].unique()
             for currentOutput in possibleOutputs:
-                currentNodeName = 'OutputNode-' + currentOutput
+                if self.isReg:
+                    currentNodeName = 'OutputNode'
+                else:
+                    currentNodeName = currentOutput
                 self.createNode(nodeName=currentNodeName, nodeLayer=outputLayerID, weightMap=newWeightMap)
 
     def createNode(self, nodeName, nodeLayer, weightMap):
@@ -59,61 +67,147 @@ class NNet:
             'weightMap': [weightMap],
             'currentInputs': [[]],
             'currentOutputs': [[]],
-            'currentErrors': [[]]
+            'actualValue': [[]],
+            'currentPartialError': [[]]
         }, index=[len(self.network)])
 
         self.network = pd.concat([self.network, newRow])
 
-    def testRecord(self, currentInputRecord):
-        # grab all layers to iterate through, removing the first as an option
-        layerIndices = self.network['nodeLayer'].unique().tolist()
-        layerIndices.remove(0)
+    def forwardPass(self, currentInputBatch):
+        # iterate through all passed in records
+        for currentInputID in currentInputBatch.index.tolist():
+            # find next record
+            currentInputRecord = currentInputBatch.loc[[currentInputID]]
 
-        # find the current class to compare against, then remove that column from the record
-        currentClass = currentInputRecord['Class'].iloc[0]
-        currentInputRecord = currentInputRecord.drop(['Class'], axis=1)
+            # grab all layers to iterate through, removing the first as an option
+            layerIndices = self.network['nodeLayer'].unique().tolist()
+            layerIndices.remove(0)
 
-        # update our input layers
-        inputIndex = self.network[self.network['nodeLayer'] == 0].index.tolist()
-        for currentIndex in inputIndex:
-            currentName = self.network.loc[currentIndex, 'nodeName']
-            self.network.loc[currentIndex, 'currentOutputs'].append(currentInputRecord[currentName].iloc[0])
+            # find the current class to compare against, then remove that column from the record
+            currentClass = currentInputRecord['Class'].iloc[0]
+            currentInputRecord = currentInputRecord.drop(['Class'], axis=1)
 
-        for currentLayer in layerIndices:
-            # find the nodes relevant to that layer
+            # init dict to store classification softmax values
+            softmaxOutputs = {}
+
+            # update our input layers
+            inputIndex = self.network[self.network['nodeLayer'] == 0].index.tolist()
+            for currentIndex in inputIndex:
+                currentName = self.network.loc[currentIndex, 'nodeName']
+                self.network.loc[currentIndex, 'currentOutputs'].append(currentInputRecord[currentName].iloc[0])
+
+            for currentLayer in layerIndices:
+                # find the nodes relevant to that layer
+                currentLayerNodes = self.network[self.network['nodeLayer'] == currentLayer]
+
+                # grab previous layer outputs as the last item in their store list of outputs
+                prevLayerOutputs = self.network[self.network['nodeLayer'] == currentLayer - 1][['nodeName', 'currentOutputs']].set_index('nodeName')
+                prevLayerOutputs['currentOutputs'] = prevLayerOutputs['currentOutputs'].apply(lambda x: x[-1])
+
+                # add bias input term
+                prevLayerOutputs = prevLayerOutputs.append({'nodeName': 'Intercept', 'currentOutputs': 1})
+
+                # iterate through all the nodes in that layer
+                for currentNode in currentLayerNodes.index.tolist():
+                    # grab the current weight map
+                    weightMap = self.network.loc[currentNode, 'weightMap']
+
+                    # convert the weight map to a dataframe
+                    dictionaryTable = pd.DataFrame.from_dict(weightMap, orient='index')
+
+                    # combine our weight map to our input values
+                    mappingTable = pd.concat([prevLayerOutputs, dictionaryTable], axis=1)
+                    mappingTable.columns = ['Inputs', 'Weights']
+
+                    inputValue = (mappingTable['Inputs'] * mappingTable['Weights']).sum()
+
+                    self.network.loc[currentNode, 'currentInputs'].append(inputValue)
+
+                    # if output layer, add in our estimate and actual outputs
+                    if currentLayer == self.numHiddenLayers + 1:
+                        # if reg, add the estimated value and class value
+                        if self.isReg:
+                            self.network.loc[currentNode, 'currentOutputs'].append(math.exp(inputValue))
+                            self.network.loc[currentNode, 'actualValue'].append(currentClass)
+                        # otherwise add our target output and softmax numerator to be normalized after node processing complete
+                        else:
+                            softmaxOutputs[currentNode] = math.exp(inputValue)
+                            self.network.loc[currentNode, 'actualValue'].append(int(currentClass == self.network.loc[currentNode, 'nodeName']))
+                    else:
+                        self.network.loc[currentNode, 'currentOutputs'].append(1 / (1 + math.exp(inputValue)))
+
+                    # add our normalized softmax values as outputs
+                if not self.isReg:
+                    totalSoftmax = sum(softmaxOutputs.values())
+                    for nodeID, softmaxValue in softmaxOutputs.items():
+                        softmaxValue = softmaxValue / totalSoftmax
+                        self.network.loc[nodeID, 'currentOutputs'].append(softmaxValue)
+
+    def updatePartialErrors(self):
+        # iterate through our network backwards
+        currentLayer = self.numHiddenLayers + 1
+        while currentLayer > 0:
+            # find our current layer of nodes
             currentLayerNodes = self.network[self.network['nodeLayer'] == currentLayer]
+            nextLayerNodes = self.network[self.network['nodeLayer'] == currentLayer + 1]
 
-            # grab previous layer outputs
-            prevLayerOutputs = self.network[self.network['nodeLayer'] == currentLayer - 1][['nodeName', 'currentOutputs']].set_index('nodeName')
-            prevLayerOutputs['currentOutputs'] = prevLayerOutputs['currentOutputs'].apply(lambda x: x[-1])
-            # iterate through all the nodes in that layer
+            # iterate through our current layer nodes
             for currentNode in currentLayerNodes.index.tolist():
+                # start with the last layer
+                if currentLayer == self.numHiddenLayers + 1:
+                    # grab our list of test cases to compare actual versus estimated to get mean difference
+                    currentActualList = np.array(currentLayerNodes[currentNode, 'actualValue'])
+                    currentOutputList = np.array(currentLayerNodes[currentNode, 'currentOutputs'])
+                    outputError = currentActualList - currentOutputList
+                    self.network.loc[currentNode, 'currentPartialError'] = outputError
 
-                # grab the current weight map
-                weightMap = self.network.loc[currentNode, 'weightMap']
-
-                # convert the weight map to a dataframe
-                dictionaryTable = pd.DataFrame.from_dict(weightMap, orient='index')
-
-                # combine our weight map to our input values
-                mappingTable = pd.concat([prevLayerOutputs, dictionaryTable], axis=1)
-                mappingTable.columns = ['Inputs', 'Weights']
-
-                self.network.loc[currentNode, 'currentInputs'].append((mappingTable['Inputs'] * mappingTable['Weights']).sum())
-
-                # find the output
-                if currentLayer == layerIndices.max():
-                    if self.isReg:
-                        self.network.loc[currentNode, 'currentOutputs'].append((mappingTable['Inputs'] * mappingTable['Weights']).sum())
-                        self.network.loc[currentNode, 'currentError'].append((self.network.loc[currentNode, 'currentValue'] - currentClass)**2)
-                    # TODO: fix the logic for classification
-                    else:
-                        self.network.loc[currentNode, 'currentOutputs'].append((mappingTable['Inputs'] * mappingTable['Weights']).sum())
-                        self.network.loc[currentNode, 'currentError'] = self.network.loc[currentNode, 'currentValue'] == currentClass
                 else:
-                    if self.isReg:
-                        self.network.loc[currentNode, 'currentOutputs'].append((mappingTable['Inputs'] * mappingTable['Weights']).sum())
-                    # TODO: fix the logic for classification
+                    currentNodeName = currentLayerNodes.loc[currentNode, 'nodeName']
+                    nextLayerWeightedError = 0
+                    for currentNextNode in nextLayerNodes.index.tolist():
+                        currentNextWeightMap = nextLayerNodes.loc[currentNextNode, 'weightMap']
+                        nextLayerWeightedError += currentNextWeightMap[currentNodeName] * nextLayerNodes.loc[currentNextNode, 'currentPartialError']
+
+                    currentNodeOutputs = np.array(currentLayerNodes.loc[currentNode, 'currentOutputs'])
+                    self.network.loc[currentNode, 'currentPartialError'] = nextLayerWeightedError * currentNodeOutputs * (1 - currentNodeOutputs)
+
+            # move back one layer
+            currentLayer -= 1
+
+    def updateWeights(self):
+
+        # create our learning rate as proportion of current set size (proxy size of output from first record) to entire training set
+        currentTestSize = len(self.network['currentOutputs'].iloc(0))
+        trainSetSize = len(self.trainData)
+        currentLearningRate = currentTestSize / trainSetSize
+
+        # iterate through our network backwards
+        currentLayer = self.numHiddenLayers + 1
+        while currentLayer > 0:
+            # iterate through our current layer nodes
+            currentLayerNodes = self.network[self.network['nodeLayer'] == currentLayer]
+            for currentNode in currentLayerNodes.index.tolist():
+                # grab relevant weight map and partial error to help update our weights
+                currentWeightMap = currentLayerNodes.loc[currentNode, 'weightMap']
+                currentPartialError = np.array(currentLayerNodes.loc[currentNode, 'currentPartialError'])
+
+                # iterate through the weights to update by learning rate and current partial error
+                for inputName, inputWeight in currentWeightMap.items():
+                    # find the previous layer outputs correcting manually for intercept to get our mean adjustment value
+                    if inputName == 'Intercept':
+                        averageAdjustment = np.mean(currentPartialError)
                     else:
-                        self.network.loc[currentNode, 'currentOutputs'].append((mappingTable['Inputs'] * mappingTable['Weights']).sum())
+                        previousLayerOutput = np.array(self.network[self.network['nodeName'] == inputName, 'currentOutputs'].iloc(0))
+                        averageAdjustment = np.mean(currentPartialError * previousLayerOutput)
+                    # adjust the weight by this calculated value
+                    currentWeightMap[inputName] = inputWeight + currentLearningRate * averageAdjustment
+
+            # move back one layer
+            currentLayer -= 1
+
+        # reset out output values once our weights have been updated
+        self.network['currentInputs'] = [[]]
+        self.network['currentOutputs'] = [[]]
+        self.network['actualValue'] = [[]]
+        self.network['currentPartialError'] = [[]]
 

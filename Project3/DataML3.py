@@ -171,7 +171,7 @@ def dataSourcing(dataName):
         dataFeatures = dataFeatures.replace({'y': 2, 'n': 0})
         dataFeatures = dataFeatures.fillna(1)
 
-        dataFeatures = dataFeatures.replace({2: 'yes', 1: 'obstain', 0: 'no'})
+        dataFeatures = dataFeatures.replace({2: 'yes', 1: 'abstain', 0: 'no'})
 
         # assign types to all columns
         dataFeatures = pd.get_dummies(dataFeatures).astype(int)
@@ -315,9 +315,6 @@ def dataSourcing(dataName):
         dataTargets = dataTargets.loc[dataFeatures.index.tolist()]
         dataTargets.columns = ['Class']
         dataTargets.loc[:, 'Class'] = np.log1p(dataTargets['Class'])
-
-    basisColumn = pd.Series(1, index=dataFeatures.index, name='Intercept')
-    dataFeatures = pd.concat([basisColumn, dataFeatures], axis=1)
 
     return dataFeatures, dataTargets
 
