@@ -1,0 +1,8 @@
+,nodeName,nodeLayer,weightMap,currentInputs,currentOutputs,actualValue,currentPartialError
+0,MYCT,0,{},[],[],[],[]
+1,MMIN,0,{},[],[],[],[]
+2,MMAX,0,{},[],[],[],[]
+3,CACH,0,{},[],[],[],[]
+4,CHMIN,0,{},[],[],[],[]
+5,CHMAX,0,{},[],[],[],[]
+6,OutputNode,1,"{'Intercept': 42.67730659965183, 'MYCT': 0.18840319715873707, 'MMIN': 24.002861539010993, 'MMAX': 32.212520494965425, 'CACH': 27.856752155950083, 'CHMIN': 27.761628979466735, 'CHMAX': 8.637080248450768}",[],[],[],[]

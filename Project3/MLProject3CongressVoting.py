@@ -27,30 +27,6 @@ if __name__ == '__main__':
     # define the columns that need to be normalized
     normalCol = []
 
-    # split into tune, test, and train sets
-    tuneSet, trainTestSet = aux.splitDataFrame(dataSet, .2, regression)
-    trainSet, testSet = aux.splitDataFrame(trainTestSet, .5, regression)
-
-    normalizeDataSet = trainSet.copy()
-    aux.normalizeNumberValues(tuneSet, normalizeDataSet, normalCol)
-    aux.normalizeNumberValues(trainSet, normalizeDataSet, normalCol)
-    aux.normalizeNumberValues(testSet, normalizeDataSet, normalCol)
-
-    # create our neural network
-    simpleNetwork = network.NNet(dataSetName=dataTitle, isRegression=regression, trainingData=trainSet,
-                                 normalCols=normalCol, numHiddenLayers=0, numHiddenLayerNodes=0, networkType="Simple")
-
-    print(trainSet.iloc[[0]])
-
-    simpleNetwork.forwardPass(trainSet.iloc[[0]])
-
-    print(simpleNetwork.network)
-
-    # create our neural network
-    backProNetwork = network.NNet(dataSetName=dataTitle, isRegression=regression, trainingData=trainSet,
-                                  normalCols=normalCol, numHiddenLayers=2, numHiddenLayerNodes=3, networkType="BackPro")
-
-    # test our neural network
-    backProNetwork.forwardPass(trainSet.iloc[[0]])
-
-    print(backProNetwork.network)
+    # run test
+    # testSimple = aux.runTest(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="Simple")
+    testBackPro = aux.runTest(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="BackPro", numHiddenLayerNodes=40)

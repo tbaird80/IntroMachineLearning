@@ -1,6 +1,48 @@
 from ucimlrepo import fetch_ucirepo
 import numpy as np
 import pandas as pd
+import os
+from datetime import datetime
+import NeuralNetworkClass as network
+import copy
+
+
+def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, numHiddenLayerNodes=0):
+
+    # create directory based on current data set and timestamp
+    currentTimestamp = datetime.now()
+    timestampStr = currentTimestamp.strftime("%d.%m.%Y_%I.%M.%S")
+    uniqueTestDir = dataSetName + "/" + timestampStr
+    # os.makedirs(uniqueTestDir)
+    #
+    # # current simple test directory
+    # uniqueTestDirSimple = uniqueTestDir + "/" + networkType
+    # os.makedirs(uniqueTestDirSimple)
+
+    # update number of hidden nodes based on network type
+    if networkType == 'Simple':
+        numHiddenLayers = 0
+        numHiddenLayerNodes = numHiddenLayerNodes
+    else:
+        numHiddenLayers = 2
+        numHiddenLayerNodes = numHiddenLayerNodes
+
+    # current network name
+    currentNetworkID = 1
+
+    # we want to run a 5x2, so create 5 loops
+    while currentNetworkID <= 10:
+        currentTune, currentTrain, currentTest = createTuneTrainTest(fullDataSet, isReg, normalCol)
+
+        currentNetwork = network.NNet(dataSetName=dataSetName, isRegression=isReg, trainingData=currentTrain,
+                                      normalCols=normalCol, numHiddenLayers=numHiddenLayers, numHiddenLayerNodes=numHiddenLayerNodes, networkType=networkType)
+
+        currentNetwork.trainNetwork(currentTune, indexStop=0)
+
+        currentNetworkID += 10
+
+    return uniqueTestDir
+
 
 def normalizeNumberValues(testSet, trainSet, colsNormalize):
     """
@@ -71,3 +113,15 @@ def splitDataFrame(dataSet, splitPercentage, isReg):
             set2 = pd.concat([set2, set2Subset])
 
     return set1, set2
+
+def createTuneTrainTest(dataSet, isReg, normalCols):
+    # split into tune, test, and train sets
+    tuneSet, trainTestSet = splitDataFrame(dataSet, .2, isReg)
+    trainSet, testSet = splitDataFrame(trainTestSet, .5, isReg)
+
+    normalizeDataSet = trainSet.copy()
+    normalizeNumberValues(tuneSet, normalizeDataSet, normalCols)
+    normalizeNumberValues(trainSet, normalizeDataSet, normalCols)
+    normalizeNumberValues(testSet, normalizeDataSet, normalCols)
+
+    return tuneSet, trainSet, testSet
