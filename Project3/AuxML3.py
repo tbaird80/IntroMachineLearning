@@ -29,19 +29,18 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
 
     # we want to run a 5x2, so create 5 loops
     currentTestBatch = 1
+    currentTestID = 1
     while currentTestBatch <= batchesToRun:
         tuneSet, testSet1, testSet2 = createTuneTrainTest(fullDataSet, isReg, normalCol)
 
         currentTestRound = 1
         while currentTestRound <= 2:
             if currentTestRound == 1:
-                currentTrain = testSet1
-                currentTest = testSet2
+                currentTrain = testSet1.copy()
+                currentTest = testSet2.copy()
             else:
-                currentTrain = testSet2
-                currentTest = testSet1
-
-            currentTestID = currentTestRound + currentTestBatch - 1
+                currentTrain = testSet2.copy()
+                currentTest = testSet1.copy()
 
             currentNetwork = network.NNet(dataSetName=dataSetName, isRegression=isReg, trainingData=currentTrain,
                                           normalCols=normalCol, proportionHiddenNodesToInput=numHiddenNodesPercentage, networkType=networkType)
@@ -69,11 +68,15 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
 
             else:
                 print("\n")
-                print("**Testing tuned network " + currentNetwork.dataName + " " + " " + str(currentTestID) + " "
+                print("**Testing tuned network " + currentNetwork.dataName + " " + str(currentTestID) + " "
                       + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
                 validationOutput = currentNetwork.forwardPass(currentTest, returnTestSet=True)
                 validationLossRate = validationOutput['lossValue'].mean()
                 print(validationLossRate)
+
+                validationOutput['testID'] = currentTestID
+                validationOutput['learningRate'] = learningRate
+                validationOutput['numHiddenNodesPercentage'] = numHiddenNodesPercentage
 
             currentOutput = pd.concat([currentOutput, validationOutput])
 
@@ -81,6 +84,7 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
                 currentOutput.to_csv(currentTestFile, index=True)
 
             currentTestRound += 1
+            currentTestID += 1
         currentTestBatch += 1
 
     return uniqueTestDir, currentOutput
@@ -146,6 +150,8 @@ def tuneNetwork(dataSetName, fullDataSet, isReg, normalCol, networkType):
     print("-------------------------------------------------------------------------------------------------------------------")
     print("---------------------------------Finished tuning learning rate " + dataSetName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "-------------------")
 
+def trainAutoEncoder():
+
 def normalizeNumberValues(testSet, trainSet, colsNormalize):
     """
     Used to normalize values within data set where relevant
@@ -183,7 +189,6 @@ def getTunedParameters(dataName, testType):
         if filename.endswith(".csv"):
             # Read the CSV file
             filepath = directory + "/" + filename
-            print(filepath)
             currentOutput = pd.read_csv(filepath)
             # Append the DataFrame to the list
             tuningOutputsList.append(currentOutput)
@@ -196,7 +201,7 @@ def getTunedParameters(dataName, testType):
     learningRate = aggTuningOutputs.loc[aggTuningOutputs['lossValue'].idxmin(), 'learningRate']
     numHiddenNodesPercentage = aggTuningOutputs.loc[aggTuningOutputs['lossValue'].idxmin(), 'numHiddenNodesPercentage']
 
-    return learningRate, numHiddenNodesPercentage
+    return float(learningRate), float(numHiddenNodesPercentage)
 
 def splitDataFrame(dataSet, splitPercentage, isReg):
     """

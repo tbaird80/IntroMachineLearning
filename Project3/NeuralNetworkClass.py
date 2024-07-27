@@ -137,7 +137,7 @@ class NNet:
         # concat the two sections together
         self.network = pd.concat([firstTwoLayers, lastTwoLayers], axis=0)
 
-    def forwardPass(self, currentInputBatch, returnTestSet=False):
+    def forwardPass(self, currentInputBatch, returnTestSet=False, trainAutoEncoder=False):
         # iterate through all passed in records
         for currentInputID in currentInputBatch.index.tolist():
             # find next record
@@ -153,6 +153,10 @@ class NNet:
 
             # init dict to store classification softmax values
             softmaxOutputs = {}
+
+            # init values to be used for autoencoder training
+            totalEstimatedOutput = []
+            totalLossValue = []
 
             # update our input layers
             inputIndex = self.network[self.network['nodeLayer'] == 0].index.tolist()
@@ -190,7 +194,16 @@ class NNet:
                     # if output layer, add in our estimate and actual outputs
                     if currentLayer == self.network['nodeLayer'].max():
                         # if reg, add the estimated value and class value
-                        if self.isReg:
+                        if trainAutoEncoder:
+                            self.network.loc[currentNode, 'currentOutputs'].append(inputValue)
+                            nodeName = self.network.loc[currentNode, 'nodeName']
+                            inputComparisonValue = currentInputRecord[nodeName].iloc[0]
+                            self.network.loc[currentIndex, 'actualValue'].append(inputComparisonValue)
+
+                            totalEstimatedOutput.append(inputValue)
+                            totalLossValue.append((inputValue - inputComparisonValue) ** 2)
+
+                        elif self.isReg:
                             self.network.loc[currentNode, 'currentOutputs'].append(inputValue)
                             self.network.loc[currentNode, 'actualValue'].append(currentClass)
 
@@ -204,7 +217,7 @@ class NNet:
                         self.network.loc[currentNode, 'currentOutputs'].append(1 / (1 + math.exp(-inputValue)))
 
                 # add our normalized softmax values as outputs
-                if (not self.isReg) and currentLayer == self.network['nodeLayer'].max():
+                if (not self.isReg) and currentLayer == self.network['nodeLayer'].max() and not trainAutoEncoder:
                     # find denom of softmax function
                     totalSoftmax = sum(softmaxOutputs.values())
 
@@ -218,6 +231,9 @@ class NNet:
                             currentInputBatch.loc[currentInputID, 'estimatedOutput'] = estimatedValue
                             crossEntropyLoss = -1 * np.log10(softmaxValue)
                             currentInputBatch.loc[currentInputID, 'lossValue'] = crossEntropyLoss
+                elif trainAutoEncoder and currentLayer == self.network['nodeLayer'].max():
+                    currentInputBatch.loc[currentInputID, 'estimatedOutput'] = totalEstimatedOutput
+                    currentInputBatch.loc[currentInputID, 'lossValue'] = sum(totalLossValue)/len(totalLossValue)
 
         if returnTestSet:
             self.dropLastForwardPass()
