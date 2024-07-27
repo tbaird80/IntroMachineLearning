@@ -91,9 +91,9 @@ class NNet:
         inputNodeNames.remove("Class")
         for currentInputName in inputNodeNames:
 
-            # create mapping to previous layer with weights randomly created starting with intercept
+            # create mapping to first hidden layer with weights randomly created starting with intercept
             outputWeightMap = {'Intercept': random.uniform(-.01, .01)}
-            prevNodeNames = self.network[self.network['nodeLayer'] == (outputLayerID - 1)]['nodeName'].tolist()
+            prevNodeNames = self.network[self.network['nodeLayer'] == 1]['nodeName'].tolist()
             for currentPrevName in prevNodeNames:
                 outputWeightMap[currentPrevName] = random.uniform(-.01, .01)
 
@@ -137,7 +137,7 @@ class NNet:
         # concat the two sections together
         self.network = pd.concat([firstTwoLayers, lastTwoLayers], axis=0)
 
-    def forwardPass(self, currentInputBatch, returnTestSet=False, trainAutoEncoder=False):
+    def forwardPass(self, currentInputBatch, returnTestSet=False, isAutoEncoder=False):
         # iterate through all passed in records
         for currentInputID in currentInputBatch.index.tolist():
             # find next record
@@ -194,7 +194,7 @@ class NNet:
                     # if output layer, add in our estimate and actual outputs
                     if currentLayer == self.network['nodeLayer'].max():
                         # if reg, add the estimated value and class value
-                        if trainAutoEncoder:
+                        if isAutoEncoder:
                             self.network.loc[currentNode, 'currentOutputs'].append(inputValue)
                             nodeName = self.network.loc[currentNode, 'nodeName']
                             inputComparisonValue = currentInputRecord[nodeName].iloc[0]
@@ -231,7 +231,7 @@ class NNet:
                             currentInputBatch.loc[currentInputID, 'estimatedOutput'] = estimatedValue
                             crossEntropyLoss = -1 * np.log10(softmaxValue)
                             currentInputBatch.loc[currentInputID, 'lossValue'] = crossEntropyLoss
-                elif trainAutoEncoder and currentLayer == self.network['nodeLayer'].max():
+                elif isAutoEncoder and currentLayer == self.network['nodeLayer'].max():
                     currentInputBatch.loc[currentInputID, 'estimatedOutput'] = totalEstimatedOutput
                     currentInputBatch.loc[currentInputID, 'lossValue'] = sum(totalLossValue)/len(totalLossValue)
 
@@ -313,7 +313,7 @@ class NNet:
         self.network['actualValue'] = self.network['actualValue'].apply(lambda x: [])
         self.network['currentPartialError'] = self.network['currentPartialError'].apply(lambda x: [])
 
-    def trainNetwork(self, tuneSet, learningRate, indexStop=0, isTune=False):
+    def trainNetwork(self, tuneSet, learningRate, indexStop=0, isTune=False, isAutoEncoder=False):
 
         # variable to test if we should continue to train the network
         keepRunning = True
@@ -324,7 +324,7 @@ class NNet:
         # run initial check as measuring point
         print("\n")
         print("**Starting initial check for " + self.dataName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
-        initOutput = self.forwardPass(tuneSet, returnTestSet=True)
+        initOutput = self.forwardPass(tuneSet, returnTestSet=True, isAutoEncoder=isAutoEncoder)
         initOutputLoss = initOutput['lossValue'].mean()
         print("Our initial loss is: " + str(initOutputLoss))
         print("\n")
@@ -354,7 +354,7 @@ class NNet:
                     remTestSet = remTestSet.drop(currentTestSet.index)
 
                     # run the forward pass of our algo
-                    self.forwardPass(currentTestSet,  returnTestSet=False)
+                    self.forwardPass(currentTestSet,  returnTestSet=False, isAutoEncoder=isAutoEncoder)
 
                     # update our partial errors
                     self.updatePartialErrors()

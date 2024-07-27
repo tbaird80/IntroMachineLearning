@@ -19,10 +19,7 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
         batchesToRun = 5
         learningRate, numHiddenNodesPercentage = getTunedParameters(dataSetName, networkType)
 
-    if networkType == 'autoEncode':
-        currentIndexStop = 1
-    else:
-        currentIndexStop = 0
+    currentIndexStop = 0
 
     # create test table
     currentOutput = pd.DataFrame()
@@ -150,7 +147,93 @@ def tuneNetwork(dataSetName, fullDataSet, isReg, normalCol, networkType):
     print("-------------------------------------------------------------------------------------------------------------------")
     print("---------------------------------Finished tuning learning rate " + dataSetName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "-------------------")
 
-def trainAutoEncoder():
+def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='AutoEncoder'):
+    # create current test directory
+    uniqueTestDir = dataSetName + "/" + networkType + "/" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S")
+    getDirectory(uniqueTestDir)
+
+    currentAutoEncoderFile = uniqueTestDir + "/autoEncoders.csv"
+    currentTestFile = uniqueTestDir + "/testOutput.csv"
+    batchesToRun = 5
+    learningRate, numHiddenNodesPercentage = getTunedParameters(dataSetName, testType='BackPro')
+
+    # create test table
+    currentOutput = pd.DataFrame()
+    currentAutoEncoder = pd.DataFrame()
+
+    # we want to run a 5x2, so create 5 loops
+    currentTestBatch = 1
+    currentTestID = 1
+
+    while currentTestBatch <= batchesToRun:
+        tuneSet, testSet1, testSet2 = createTuneTrainTest(fullDataSet, isReg, normalCol)
+
+        currentTestRound = 1
+        while currentTestRound <= 2:
+            if currentTestRound == 1:
+                currentTrain = testSet1.copy()
+                currentTest = testSet2.copy()
+            else:
+                currentTrain = testSet2.copy()
+                currentTest = testSet1.copy()
+
+            currentNetwork = network.NNet(dataSetName=dataSetName, isRegression=isReg, trainingData=currentTrain,
+                                          normalCols=normalCol, proportionHiddenNodesToInput=numHiddenNodesPercentage, networkType='BackPro')
+
+            tempIsReg = currentNetwork.isReg
+            tempFullNetwork = hardCopyDataframe(currentNetwork.network)
+
+            currentNetwork.isReg = True
+            currentNetwork.network = hardCopyDataframe(currentNetwork.autoencoder)
+
+            print("\n")
+            print("*******************************************************************************************************************")
+            print("*************************************Create Autoencoder************************************************************")
+            print("*******************************************************************************************************************")
+            print("***********************Starting testing network " + dataSetName + " " + str(currentTestID) +
+                  " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
+
+            currentNetwork.trainNetwork(tuneSet, learningRate, indexStop=0, isAutoEncoder=True)
+
+            # reset our network values
+            currentNetwork.isReg = tempIsReg
+            currentNetwork.autoencoder = hardCopyDataframe(currentNetwork.network)
+            currentNetwork.network = tempFullNetwork
+            currentNetwork.updateWithAutoencoder()
+
+            # write current autoencoder to memory
+            currentNetwork.autoencoder['testID'] = currentTestID
+            currentAutoEncoder = pd.concat([currentAutoEncoder, currentNetwork.autoencoder])
+            currentAutoEncoder.to_csv(currentAutoEncoderFile, index=True)
+
+            print("\n")
+            print("*******************************************************************************************************************")
+            print("**********************************Post Autoencoder Training Run****************************************************")
+            print("*******************************************************************************************************************")
+            print("***********************Starting testing network " + dataSetName + " " + str(currentTestID) +
+                  " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
+
+            currentNetwork.trainNetwork(tuneSet, learningRate, indexStop=1)
+
+            print("\n")
+            print("**Testing tuned network " + currentNetwork.dataName + " " + str(currentTestID) + " "
+                  + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
+            validationOutput = currentNetwork.forwardPass(currentTest, returnTestSet=True)
+            validationLossRate = validationOutput['lossValue'].mean()
+            print(validationLossRate)
+
+            validationOutput['testID'] = currentTestID
+            validationOutput['learningRate'] = learningRate
+            validationOutput['numHiddenNodesPercentage'] = numHiddenNodesPercentage
+
+            currentOutput = pd.concat([currentOutput, validationOutput])
+            currentOutput.to_csv(currentTestFile, index=True)
+
+            currentTestRound += 1
+            currentTestID += 1
+        currentTestBatch += 1
+
+    return uniqueTestDir, currentOutput
 
 def normalizeNumberValues(testSet, trainSet, colsNormalize):
     """
