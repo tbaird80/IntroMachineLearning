@@ -3,15 +3,27 @@ import numpy as np
 import math
 import random
 import copy
+from datetime import datetime
+import AuxML3 as aux
 
 class NNet:
-    def __init__(self, dataSetName, isRegression, trainingData, normalCols, numHiddenLayers, numHiddenLayerNodes, networkType):
+    def __init__(self, dataSetName, isRegression, trainingData, normalCols, proportionHiddenNodesToInput, networkType):
+
+        # calculate the number of hidden layers
+        if networkType == 'Simple':
+            numHiddenLayers = 0
+        else:
+            numHiddenLayers = 2
+
+        # calculate the number of hidden nodes per layer
+        numHiddenLayerNodes = int(len(trainingData.columns) * proportionHiddenNodesToInput)
+
         # set variables that define the network
         self.dataName = dataSetName
         self.isReg = isRegression
         self.normalCols = normalCols
         self.numHiddenLayers = numHiddenLayers
-        self.numHiddenLayersNodes = numHiddenLayerNodes
+        self.numHiddenLayerNodes = numHiddenLayerNodes
         self.networkType = networkType
 
         # data to train on
@@ -21,6 +33,10 @@ class NNet:
         self.network = pd.DataFrame()
         self.autoencoder = pd.DataFrame()
         self.inputNames = trainingData.columns
+
+        # train variables
+        self.trainNetworkList = []
+        self.trainPerformanceList = []
 
         # create input layer
         inputNodeNames = list(self.trainData.columns)
@@ -110,9 +126,13 @@ class NNet:
         self.autoencoder = pd.concat([self.autoencoder, newRow])
 
     def updateWithAutoencoder(self):
+        # copy both networks
+        currentAutoencoder = aux.hardCopyDataframe(self.autoencoder)
+        currentNetwork = aux.hardCopyDataframe(self.network)
+
         # find the first two layers of autoencoder, and second two layers of regular network
-        firstTwoLayers = self.autoencoder[self.autoencoder['nodeLayer'] < 2]
-        lastTwoLayers = self.network[self.network['nodeLayer'] > 1]
+        firstTwoLayers = currentAutoencoder[currentAutoencoder['nodeLayer'] < 2]
+        lastTwoLayers = currentNetwork[currentNetwork['nodeLayer'] > 1]
 
         # concat the two sections together
         self.network = pd.concat([firstTwoLayers, lastTwoLayers], axis=0)
@@ -229,20 +249,12 @@ class NNet:
                     for currentNextNode in nextLayerNodes.index.tolist():
                         currentNextWeightMap = nextLayerNodes.loc[currentNextNode, 'weightMap']
                         nextLayerWeightedError += currentNextWeightMap[currentNodeName] * np.array(nextLayerNodes.loc[currentNextNode, 'currentPartialError'])
-
-                    currentNodeOutputs = np.array(currentLayerNodes.loc[currentNode, 'currentOutputs'])
-                    newPartialError = nextLayerWeightedError * currentNodeOutputs * (1 - currentNodeOutputs)
-                    self.network.loc[currentNode, 'currentPartialError'].extend(newPartialError.tolist())
+                    self.network.loc[currentNode, 'currentPartialError'].extend(nextLayerWeightedError.tolist())
 
             # move back one layer
             currentLayer -= 1
 
-    def updateWeights(self, learningRateAdjustment, indexStoppingPoint=0):
-
-        # create our learning rate as proportion of current set size (proxy size of output from first record) to entire training set
-        currentTestSize = len(self.network.loc[min(self.network.index), 'currentOutputs'])
-        trainSetSize = len(self.trainData)
-        currentLearningRate = currentTestSize / trainSetSize * learningRateAdjustment
+    def updateWeights(self, currentLearningRate, indexStoppingPoint=0):
 
         # iterate through our network backwards
         currentLayer = self.network['nodeLayer'].max()
@@ -254,15 +266,21 @@ class NNet:
                 currentWeightMap = self.network.loc[currentNode, 'weightMap']
                 currentPartialError = np.array(currentLayerNodes.loc[currentNode, 'currentPartialError'])
 
+                if currentLayer == self.network['nodeLayer'].max():
+                    currentPartialDeriv = 1
+                else:
+                    currentNodeOutputs = np.array(self.network.loc[currentNode, 'currentOutputs'])
+                    currentPartialDeriv = currentNodeOutputs * (1 - currentNodeOutputs)
+
                 # iterate through the weights to update by learning rate and current partial error
                 for inputName, inputWeight in currentWeightMap.items():
                     # find the previous layer outputs correcting manually for intercept to get our mean adjustment value
                     if inputName == 'Intercept':
-                        averageAdjustment = np.mean(currentPartialError)
+                        averageAdjustment = np.mean(currentPartialError * currentPartialDeriv)
                     else:
-                        previousLayerRecord = self.network[self.network['nodeName'] == inputName]
-                        previousLayerOutput = np.array(previousLayerRecord.loc[min(previousLayerRecord.index), 'currentOutputs'])
-                        averageAdjustment = np.mean(currentPartialError * previousLayerOutput)
+                        previousLayerNodeID = self.network[self.network['nodeName'] == inputName].index[0]
+                        previousLayerOutput = np.array(self.network.loc[previousLayerNodeID, 'currentOutputs'])
+                        averageAdjustment = np.mean(currentPartialError * currentPartialDeriv * previousLayerOutput)
                     # adjust the weight by this calculated value
                     currentWeightMap[inputName] = inputWeight + currentLearningRate * averageAdjustment
 
@@ -279,40 +297,88 @@ class NNet:
         self.network['actualValue'] = self.network['actualValue'].apply(lambda x: [])
         self.network['currentPartialError'] = self.network['currentPartialError'].apply(lambda x: [])
 
-    def trainNetwork(self, tuneSet, indexStop=0):
+    def trainNetwork(self, tuneSet, learningRate, indexStop=0, isTune=False):
 
-        numRuns = 10
-        learningRateAdjustment = 1
+        # variable to test if we should continue to train the network
+        keepRunning = True
 
-        validationOutput = self.forwardPass(tuneSet, returnTestSet=True)
-        print(validationOutput['lossValue'].mean())
-        # validationOutput.to_csv(self.dataName + "/PreValidationTest.csv")
+        # the number of runs before a check for new min
+        numRunsBeforeCheck = 3
 
-        # self.network.to_csv(self.dataName + "/DebugTestPreWeightChange.csv")
+        # run initial check as measuring point
+        print("\n")
+        print("**Starting initial check for " + self.dataName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
+        initOutput = self.forwardPass(tuneSet, returnTestSet=True)
+        initOutputLoss = initOutput['lossValue'].mean()
+        print("Our initial loss is: " + str(initOutputLoss))
+        print("\n")
 
-        for index in range(numRuns):
+        # init current min at intial loss metric
+        currentMin = initOutputLoss
+        totalRuns = 1
 
-            remTestSet = self.trainData.copy()
-            amountToSample = int(.1 * len(remTestSet))
+        while keepRunning:
 
-            while len(remTestSet) > 0:
-                # adjust the amount to sample to ensure we don't sample more than is there
-                if amountToSample > len(remTestSet):
-                    amountToSample = len(remTestSet)
+            for index in range(numRunsBeforeCheck):
 
-                # sample the desired amount, remove those from remaining set
-                currentTestSet = remTestSet.sample(amountToSample)
-                remTestSet = remTestSet.drop(currentTestSet.index)
+                remTestSet = self.trainData.copy()
+                amountToSample = int(.02 * len(remTestSet))
 
-                self.forwardPass(currentTestSet,  returnTestSet=False)
-                # self.network.to_csv(self.dataName + "/DebugTestPreWeightChange" + str(index) + self.networkType + ".csv")
-                self.updatePartialErrors()
-                self.updateWeights(learningRateAdjustment, indexStop)
+                print("**Starting training " + str(totalRuns) + " for " + self.dataName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
+                while len(remTestSet) > 0:
+                    # adjust the amount to sample to ensure we don't sample more than is there
+                    if amountToSample > len(remTestSet):
+                        amountToSample = len(remTestSet)
 
-            # self.network.to_csv(self.dataName + "/DebugTestPostWeightChange" + str(index) + self.networkType + ".csv")
+                    # adjust the learning rate for the size of the test sample
+                    adjLearningRate = learningRate * amountToSample
 
-            validationOutput = self.forwardPass(tuneSet, returnTestSet=True)
-            # validationOutput.to_csv(self.dataName + "/PostValidationTest" + str(index) + ".csv")
-            print(validationOutput['lossValue'].mean())
+                    # sample the desired amount, remove those from remaining set
+                    currentTestSet = remTestSet.sample(amountToSample)
+                    remTestSet = remTestSet.drop(currentTestSet.index)
 
-            learningRateAdjustment = learningRateAdjustment + 1
+                    # run the forward pass of our algo
+                    self.forwardPass(currentTestSet,  returnTestSet=False)
+
+                    # update our partial errors
+                    self.updatePartialErrors()
+
+                    # update our weights
+                    self.updateWeights(adjLearningRate, indexStop)
+
+                # test against our validation set
+                print("**Starting validation check for " + self.dataName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
+                validationOutput = self.forwardPass(tuneSet, returnTestSet=True)
+                validationLossRate = validationOutput['lossValue'].mean()
+                print("Our output is: " + str(validationLossRate))
+
+                # save down a record of this run
+                networkCopy = aux.hardCopyDataframe(self.network)
+                self.trainNetworkList.append(networkCopy)
+                self.trainPerformanceList.append(validationLossRate)
+
+                totalRuns += 1
+
+            prevMin = currentMin
+            currentMin = min(self.trainPerformanceList)
+
+            sameMin = currentMin == prevMin
+            minChange = (prevMin - currentMin)/prevMin
+
+            if isTune:
+                convergenceTest = sameMin or minChange < .01 or totalRuns >= 15
+            else:
+                convergenceTest = sameMin or minChange < .02 or totalRuns >= 30
+
+            if convergenceTest:
+                keepRunning = False
+
+            print("\n")
+
+        # restore the network
+        networkToKeep = self.trainNetworkList[self.trainPerformanceList.index(currentMin)]
+        self.network = aux.hardCopyDataframe(networkToKeep)
+
+        # reset our train lists
+        self.trainNetworkList = []
+        self.trainPerformanceList = []

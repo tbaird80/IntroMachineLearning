@@ -6,43 +6,145 @@ from datetime import datetime
 import NeuralNetworkClass as network
 import copy
 
+def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRate=0, numHiddenNodesPercentage=0, isTune=False):
 
-def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, numHiddenLayerNodes=0):
-
-    # create directory based on current data set and timestamp
-    currentTimestamp = datetime.now()
-    timestampStr = currentTimestamp.strftime("%d.%m.%Y_%I.%M.%S")
-    uniqueTestDir = dataSetName + "/" + timestampStr
-    # os.makedirs(uniqueTestDir)
-    #
-    # # current simple test directory
-    # uniqueTestDirSimple = uniqueTestDir + "/" + networkType
-    # os.makedirs(uniqueTestDirSimple)
-
-    # update number of hidden nodes based on network type
-    if networkType == 'Simple':
-        numHiddenLayers = 0
-        numHiddenLayerNodes = numHiddenLayerNodes
+    # create current test directory
+    uniqueTestDir = dataSetName + "/" + networkType
+    if isTune:
+        batchesToRun = 1
     else:
-        numHiddenLayers = 2
-        numHiddenLayerNodes = numHiddenLayerNodes
+        uniqueTestDir = uniqueTestDir + "/" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S")
+        getDirectory(uniqueTestDir)
+        currentTestFile = uniqueTestDir + "/testOutput.csv"
+        batchesToRun = 5
+        learningRate, numHiddenNodesPercentage = getTunedParameters(dataSetName, networkType)
 
-    # current network name
-    currentNetworkID = 1
+    if networkType == 'autoEncode':
+        currentIndexStop = 1
+    else:
+        currentIndexStop = 0
+
+    # create test table
+    currentOutput = pd.DataFrame()
 
     # we want to run a 5x2, so create 5 loops
-    while currentNetworkID <= 10:
-        currentTune, currentTrain, currentTest = createTuneTrainTest(fullDataSet, isReg, normalCol)
+    currentTestBatch = 1
+    while currentTestBatch <= batchesToRun:
+        tuneSet, testSet1, testSet2 = createTuneTrainTest(fullDataSet, isReg, normalCol)
 
-        currentNetwork = network.NNet(dataSetName=dataSetName, isRegression=isReg, trainingData=currentTrain,
-                                      normalCols=normalCol, numHiddenLayers=numHiddenLayers, numHiddenLayerNodes=numHiddenLayerNodes, networkType=networkType)
+        currentTestRound = 1
+        while currentTestRound <= 2:
+            if currentTestRound == 1:
+                currentTrain = testSet1
+                currentTest = testSet2
+            else:
+                currentTrain = testSet2
+                currentTest = testSet1
 
-        currentNetwork.trainNetwork(currentTune, indexStop=0)
+            currentTestID = currentTestRound + currentTestBatch - 1
 
-        currentNetworkID += 10
+            currentNetwork = network.NNet(dataSetName=dataSetName, isRegression=isReg, trainingData=currentTrain,
+                                          normalCols=normalCol, proportionHiddenNodesToInput=numHiddenNodesPercentage, networkType=networkType)
 
-    return uniqueTestDir
+            print("\n")
+            print("*******************************************************************************************************************")
+            print("*************************************Next Training Run*************************************************************")
+            print("*******************************************************************************************************************")
+            print("***********************Starting testing network " + dataSetName + " " + str(currentTestID) +
+                  " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
 
+            currentNetwork.trainNetwork(tuneSet, learningRate, indexStop=currentIndexStop, isTune=isTune)
+
+            if isTune:
+                print("\n")
+                print("**Checking performance for tuned hyperparameter " + currentNetwork.dataName + " " + str(currentTestID) + " "
+                      + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
+                validationOutput = currentNetwork.forwardPass(tuneSet, returnTestSet=True)
+                validationLossRate = validationOutput['lossValue'].mean()
+                print(validationLossRate)
+
+                validationOutput['testID'] = currentTestID
+                validationOutput['learningRate'] = learningRate
+                validationOutput['numHiddenNodesPercentage'] = numHiddenNodesPercentage
+
+            else:
+                print("\n")
+                print("**Testing tuned network " + currentNetwork.dataName + " " + " " + str(currentTestID) + " "
+                      + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
+                validationOutput = currentNetwork.forwardPass(currentTest, returnTestSet=True)
+                validationLossRate = validationOutput['lossValue'].mean()
+                print(validationLossRate)
+
+            currentOutput = pd.concat([currentOutput, validationOutput])
+
+            if not isTune:
+                currentOutput.to_csv(currentTestFile, index=True)
+
+            currentTestRound += 1
+        currentTestBatch += 1
+
+    return uniqueTestDir, currentOutput
+
+def tuneNetwork(dataSetName, fullDataSet, isReg, normalCol, networkType):
+
+    # hyperparameter options
+    if dataSetName == 'Abalone':
+        learningRateOptions = [.001, .01, .05]
+    else:
+        learningRateOptions = [.001, .01, .1]
+    numHiddenNodesPercentageOptions = [.5, .75]
+
+    if networkType == 'Simple':
+        for currentLearnRate in learningRateOptions:
+            print("\n")
+            print("-------------------------------------------------------------------------------------------------------------------")
+            print("-------------------------------------Next Tuning Run---------------------------------------------------------------")
+            print("-------------------------------------------------------------------------------------------------------------------")
+            print("---------------------------------Starting tuning learning rate " + dataSetName + " " + str(currentLearnRate) +
+                      " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "------------")
+
+            testDir, testOutput = runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRate=currentLearnRate, numHiddenNodesPercentage=.5, isTune=True)
+
+            # create test directory if not present
+            testDir += "/TuningTests"
+            getDirectory(testDir)
+            # create test file path
+            currentTestFile = testDir + "/" + str(currentLearnRate) + "testOutput.csv"
+
+            testOutput.to_csv(currentTestFile, index=True)
+
+    else:
+        # set all of our options
+        parameterOptions = pd.DataFrame({'learningRate': learningRateOptions * 2,
+                                         'numHiddenNodes': numHiddenNodesPercentageOptions * 3})
+
+        parameterOptions = parameterOptions.sort_values(by='learningRate')
+
+        # iterate through all the parameter options
+        for currentParametersIndex in parameterOptions.index.tolist():
+            currentLearningRate = parameterOptions.loc[currentParametersIndex, 'learningRate']
+            currentHiddenNodePercent = parameterOptions.loc[currentParametersIndex, 'numHiddenNodes']
+
+            print("-------------------------------------------------------------------------------------------------------------------")
+            print("-------------------------------------Next Tuning Run---------------------------------------------------------------")
+            print("-------------------------------------------------------------------------------------------------------------------")
+            print("---------------------------------Starting tuning learning rate " + dataSetName + " " + str(currentLearningRate) + " and percent of " + str(currentHiddenNodePercent) +
+                  " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "------------")
+
+            testDir, testOutput = runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRate=currentLearningRate, numHiddenNodesPercentage=currentHiddenNodePercent, isTune=True)
+
+            # create test directory if not present
+            testDir += "/TuningTests"
+            getDirectory(testDir)
+            # create test file path
+            currentTestFile = testDir + "/" + str(currentLearningRate) + "LearningRate" + str(currentHiddenNodePercent) + "NodePercent" + "testOutput.csv"
+
+            testOutput.to_csv(currentTestFile, index=True)
+
+    print("-------------------------------------------------------------------------------------------------------------------")
+    print("-------------------------------------Done Tuning Learning Rate-----------------------------------------------------")
+    print("-------------------------------------------------------------------------------------------------------------------")
+    print("---------------------------------Finished tuning learning rate " + dataSetName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "-------------------")
 
 def normalizeNumberValues(testSet, trainSet, colsNormalize):
     """
@@ -63,6 +165,38 @@ def normalizeNumberValues(testSet, trainSet, colsNormalize):
         else:
             continue
     #return testSet
+
+def hardCopyDataframe(currentDataFrame):
+    # need to adjust hard copy to account for dictionary columns
+    dataframeCopy = currentDataFrame.applymap(lambda x: copy.deepcopy(x) if isinstance(x, dict) else x)
+    return dataframeCopy
+
+def getTunedParameters(dataName, testType):
+    # Specify the directory containing the CSV files
+    directory = dataName + '/' + testType + '/' + 'TuningTests'
+
+    # List to hold DataFrames
+    tuningOutputsList = []
+
+    # Loop through all files in the directory
+    for filename in os.listdir(directory):
+        if filename.endswith(".csv"):
+            # Read the CSV file
+            filepath = directory + "/" + filename
+            print(filepath)
+            currentOutput = pd.read_csv(filepath)
+            # Append the DataFrame to the list
+            tuningOutputsList.append(currentOutput)
+
+    # Concatenate all DataFrames in the list into one DataFrame
+    tuningOutputs = pd.concat(tuningOutputsList, ignore_index=True)
+
+    aggTuningOutputs = tuningOutputs[['learningRate', 'lossValue', 'numHiddenNodesPercentage']].groupby(['learningRate', 'numHiddenNodesPercentage'], as_index=False).mean()
+
+    learningRate = aggTuningOutputs.loc[aggTuningOutputs['lossValue'].idxmin(), 'learningRate']
+    numHiddenNodesPercentage = aggTuningOutputs.loc[aggTuningOutputs['lossValue'].idxmin(), 'numHiddenNodesPercentage']
+
+    return learningRate, numHiddenNodesPercentage
 
 def splitDataFrame(dataSet, splitPercentage, isReg):
     """
@@ -125,3 +259,12 @@ def createTuneTrainTest(dataSet, isReg, normalCols):
     normalizeNumberValues(testSet, normalizeDataSet, normalCols)
 
     return tuneSet, trainSet, testSet
+
+def getDirectory(desiredPath):
+    # Check if the directory exists
+    if not os.path.exists(desiredPath):
+        # If the directory does not exist, create it
+        os.makedirs(desiredPath)
+        print(f'Directory "{desiredPath}" created.')
+    else:
+        print(f'Directory "{desiredPath}" already exists.')

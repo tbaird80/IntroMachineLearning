@@ -15,7 +15,7 @@ if __name__ == '__main__':
     pd.set_option('display.max_columns', None)
     # function inputs
     # data set title
-    dataTitle = 'CongressVoting'
+    dataTitle = 'BreastCancer'
 
     # grab data
     features, targets = DataML3.dataSourcing(dataTitle)
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     regression = False
 
     # define the columns that need to be normalized
-    normalCol = []
+    normalCol = features.columns
 
     # tune data set
     # aux.tuneNetwork(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="Simple")

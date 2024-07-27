@@ -15,22 +15,22 @@ if __name__ == '__main__':
     pd.set_option('display.max_columns', None)
     # function inputs
     # data set title
-    dataTitle = 'CongressVoting'
+    dataTitle = 'ForestFires'
 
     # grab data
     features, targets = DataML3.dataSourcing(dataTitle)
     dataSet = features.join(targets)
 
     # define whether it is a regression
-    regression = False
+    regression = True
 
     # define the columns that need to be normalized
-    normalCol = []
+    normalCol = ['FFMC', 'DMC', 'DC', 'ISI', 'temp', 'RH', 'wind', 'rain']
 
     # tune data set
     # aux.tuneNetwork(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="Simple")
     # aux.tuneNetwork(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="BackPro")
 
     # run test
-    # testSimple = aux.runTest(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="Simple", learningRate=.1, numHiddenNodesPercentage=.9)
-    # testBackPro = aux.runTest(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="BackPro", learningRate=.1, numHiddenNodesPercentage=.9)
+    # testSimple = aux.runTest(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="Simple", learningRate=.001, numHiddenNodesPercentage=.9)
+    # testBackPro = aux.runTest(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="BackPro", learningRate=.001, numHiddenNodesPercentage=.9)

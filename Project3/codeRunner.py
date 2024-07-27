@@ -1,0 +1,27 @@
+import subprocess
+import datetime
+
+if __name__ == '__main__':
+    # List of scripts to run
+    scriptsToRun = [
+        "MLProject3CarEval.py",
+        "MLProject3ForestFires.py",
+        "MLProject3CongressVoting.py",
+        "MLProject3Abalone.py"
+    ]
+
+    # Dictionary to store the status of each script
+    status = {}
+
+    for script in scriptsToRun:
+        try:
+            subprocess.run(["python", script], check=True)
+            status[script] = "Success at " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S")
+        except subprocess.CalledProcessError as e:
+            status[script] = f"Failed: {str(e)} at " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S")
+        except Exception as e:
+            status[script] = f"Error: {str(e)} at " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S")
+
+    # Print the results
+    for script, result in status.items():
+        print(f"{script}: {result}")

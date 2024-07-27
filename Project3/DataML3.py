@@ -24,7 +24,7 @@ def dataSourcing(dataName):
             dataTargets = pd.read_csv(targetPath, index_col=0)
 
         else:
-            print(dataName + "data does not exist, reading from source")
+            print(dataName + " data does not exist, reading from source")
 
             # fetch dataset
             breast_cancer_wisconsin_original = fetch_ucirepo(id=15)
@@ -226,14 +226,14 @@ def dataSourcing(dataName):
     elif dataName == 'ComputerHardware':
         # check if file path exists, read from file if so, otherwise grab from online repo
         if os.path.exists(featurePath) & os.path.exists(targetPath):
-            print(dataName + "data exists, reading from csv")
+            print(dataName + " data exists, reading from csv")
 
             # read from local directory
             dataFeatures = pd.read_csv(featurePath, index_col=0)
             dataTargets = pd.read_csv(targetPath, index_col=0)
 
         else:
-            print(dataName + "data does not exist, reading from source")
+            print(dataName + " data does not exist, reading from source")
 
             # fetch dataset
             computer_hardware = fetch_ucirepo(id=29)
@@ -264,14 +264,14 @@ def dataSourcing(dataName):
     elif dataName == 'ForestFires':
         # check if file path exists, read from file if so, otherwise grab from online repo
         if os.path.exists(featurePath) & os.path.exists(targetPath):
-            print(dataName + "data exists, reading from csv")
+            print(dataName + " data exists, reading from csv")
 
             # read from local directory
             dataFeatures = pd.read_csv(featurePath, index_col=0)
             dataTargets = pd.read_csv(targetPath, index_col=0)
 
         else:
-            print(dataName + "data does not exist, reading from source")
+            print(dataName + " data does not exist, reading from source")
 
             # fetch dataset
             forest_fires = fetch_ucirepo(id=162)

@@ -15,7 +15,7 @@ if __name__ == '__main__':
     pd.set_option('display.max_columns', None)
     # function inputs
     # data set title
-    dataTitle = 'CongressVoting'
+    dataTitle = 'CarEval'
 
     # grab data
     features, targets = DataML3.dataSourcing(dataTitle)
