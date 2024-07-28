@@ -153,11 +153,13 @@ def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='
     getDirectory(uniqueTestDir)
 
     currentAutoEncoderFile = uniqueTestDir + "/autoEncoders.csv"
+    currentAutoEncoderTestFile = uniqueTestDir + "/autoEncodersTest.csv"
     currentTestFile = uniqueTestDir + "/testOutput.csv"
     batchesToRun = 5
     learningRate, numHiddenNodesPercentage = getTunedParameters(dataSetName, testType='BackPro')
 
     # create test table
+    currentAutoEncoderRun = pd.DataFrame()
     currentOutput = pd.DataFrame()
     currentAutoEncoder = pd.DataFrame()
 
@@ -177,7 +179,7 @@ def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='
                 currentTrain = testSet2.copy()
                 currentTest = testSet1.copy()
 
-            currentNetwork = network.NNet(dataSetName=dataSetName, isRegression=isReg, trainingData=currentTrain,
+            currentNetwork = network.NNet(dataSetName=dataSetName, isRegression=isReg, trainingData=currentTrain.copy(),
                                           normalCols=normalCol, proportionHiddenNodesToInput=numHiddenNodesPercentage, networkType='BackPro')
 
             tempIsReg = currentNetwork.isReg
@@ -193,12 +195,28 @@ def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='
             print("***********************Starting testing network " + dataSetName + " " + str(currentTestID) +
                   " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
 
-            currentNetwork.trainNetwork(tuneSet, learningRate, indexStop=0, isAutoEncoder=True)
+            currentNetwork.trainNetwork(tuneSet.copy(), learningRate, indexStop=0, isAutoEncoder=True)
+
+            print("\n")
+            print("**Testing tuned autoencoder " + currentNetwork.dataName + " " + str(currentTestID) + " "
+                  + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
+            validationOutputTest = currentNetwork.forwardPass(currentTest.copy(), returnTestSet=True, isAutoEncoder=True)
+            validationOutputTrain = currentNetwork.forwardPass(currentTrain.copy(), returnTestSet=True, isAutoEncoder=True)
+            validationLossRateTest = validationOutputTest['lossValue'].mean()
+            validationLossRateTrain = validationOutputTrain['lossValue'].mean()
+            print("Test validation: " + str(validationLossRateTest))
+            print("Train validation: " + str(validationLossRateTrain))
+
+            # write current autoencoder test to memory
+            validationOutputTest['testID'] = "Test" + str(currentTestID)
+            validationOutputTrain['testID'] = "Train" + str(currentTestID)
+            currentAutoEncoderRun = pd.concat([currentAutoEncoderRun, validationOutputTest, validationOutputTrain])
+            currentAutoEncoderRun.to_csv(currentAutoEncoderTestFile, index=True)
 
             # reset our network values
             currentNetwork.isReg = tempIsReg
             currentNetwork.autoencoder = hardCopyDataframe(currentNetwork.network)
-            currentNetwork.network = tempFullNetwork
+            currentNetwork.network = hardCopyDataframe(tempFullNetwork)
             currentNetwork.updateWithAutoencoder()
 
             # write current autoencoder to memory
@@ -213,20 +231,28 @@ def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='
             print("***********************Starting testing network " + dataSetName + " " + str(currentTestID) +
                   " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
 
-            currentNetwork.trainNetwork(tuneSet, learningRate, indexStop=1)
+            currentNetwork.trainNetwork(tuneSet.copy(), learningRate, indexStop=1)
 
             print("\n")
             print("**Testing tuned network " + currentNetwork.dataName + " " + str(currentTestID) + " "
                   + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
-            validationOutput = currentNetwork.forwardPass(currentTest, returnTestSet=True)
-            validationLossRate = validationOutput['lossValue'].mean()
-            print(validationLossRate)
+            validationOutputTest = currentNetwork.forwardPass(currentTest.copy(), returnTestSet=True)
+            validationOutputTrain = currentNetwork.forwardPass(currentTrain.copy(), returnTestSet=True)
+            validationLossRateTest = validationOutputTest['lossValue'].mean()
+            validationLossRateTrain = validationOutputTrain['lossValue'].mean()
+            print("Test validation: " + str(validationLossRateTest))
+            print("Train validation: " + str(validationLossRateTrain))
 
-            validationOutput['testID'] = currentTestID
-            validationOutput['learningRate'] = learningRate
-            validationOutput['numHiddenNodesPercentage'] = numHiddenNodesPercentage
+            # write current autoencoder test to memory
+            validationOutputTest['testID'] = "Test" + str(currentTestID)
+            validationOutputTrain['testID'] = "Train" + str(currentTestID)
+            validationOutputTest['learningRate'] = learningRate
+            validationOutputTrain['numHiddenNodesPercentage'] = numHiddenNodesPercentage
+            validationOutputTest['learningRate'] = learningRate
+            validationOutputTrain['numHiddenNodesPercentage'] = numHiddenNodesPercentage
 
-            currentOutput = pd.concat([currentOutput, validationOutput])
+            # write tests to csv
+            currentOutput = pd.concat([currentOutput, validationOutputTest, validationOutputTrain])
             currentOutput.to_csv(currentTestFile, index=True)
 
             currentTestRound += 1

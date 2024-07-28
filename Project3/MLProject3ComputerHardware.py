@@ -36,4 +36,4 @@ if __name__ == '__main__':
     # testBackPro = aux.runTest(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="BackPro", isTune=False)
 
     # train autoencoder
-    aux.runWithAutoEncoder(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="BackPro")
+    aux.runWithAutoEncoder(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="AutoEncoder")

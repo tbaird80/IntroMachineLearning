@@ -60,7 +60,7 @@ class NNet:
                 currentNodeName = 'HiddenNode-' + str(currentHiddenNode) + "-" + str(currentHiddenLayer)
                 self.createNode(nodeName=currentNodeName, nodeLayer=currentLayerID, weightMap=newWeightMap)
 
-                if currentHiddenNode == 1:
+                if currentHiddenLayer == 0:
                     self.createNodeAutoencoder(nodeName=currentNodeName, nodeLayer=currentLayerID, weightMap=newWeightMap)
 
         # create output layer
@@ -198,7 +198,7 @@ class NNet:
                             self.network.loc[currentNode, 'currentOutputs'].append(inputValue)
                             nodeName = self.network.loc[currentNode, 'nodeName']
                             inputComparisonValue = currentInputRecord[nodeName].iloc[0]
-                            self.network.loc[currentIndex, 'actualValue'].append(inputComparisonValue)
+                            self.network.loc[currentNode, 'actualValue'].append(inputComparisonValue)
 
                             totalEstimatedOutput.append(inputValue)
                             totalLossValue.append((inputValue - inputComparisonValue) ** 2)
@@ -217,7 +217,7 @@ class NNet:
                         self.network.loc[currentNode, 'currentOutputs'].append(1 / (1 + math.exp(-inputValue)))
 
                 # add our normalized softmax values as outputs
-                if (not self.isReg) and currentLayer == self.network['nodeLayer'].max() and not trainAutoEncoder:
+                if (not self.isReg) and currentLayer == self.network['nodeLayer'].max() and not isAutoEncoder:
                     # find denom of softmax function
                     totalSoftmax = sum(softmaxOutputs.values())
 
@@ -232,7 +232,7 @@ class NNet:
                             crossEntropyLoss = -1 * np.log10(softmaxValue)
                             currentInputBatch.loc[currentInputID, 'lossValue'] = crossEntropyLoss
                 elif isAutoEncoder and currentLayer == self.network['nodeLayer'].max():
-                    currentInputBatch.loc[currentInputID, 'estimatedOutput'] = totalEstimatedOutput
+                    currentInputBatch.loc[currentInputID, 'estimatedOutput'] = sum(totalEstimatedOutput)/len(totalEstimatedOutput)
                     currentInputBatch.loc[currentInputID, 'lossValue'] = sum(totalLossValue)/len(totalLossValue)
 
         if returnTestSet:
@@ -364,7 +364,7 @@ class NNet:
 
                 # test against our validation set
                 print("**Starting validation check for " + self.dataName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
-                validationOutput = self.forwardPass(tuneSet, returnTestSet=True)
+                validationOutput = self.forwardPass(tuneSet, returnTestSet=True, isAutoEncoder=isAutoEncoder)
                 validationLossRate = validationOutput['lossValue'].mean()
                 print("Our output is: " + str(validationLossRate))
 
