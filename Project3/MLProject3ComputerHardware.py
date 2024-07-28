@@ -31,7 +31,7 @@ if __name__ == '__main__':
     # aux.tuneNetwork(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="Simple")
     # aux.tuneNetwork(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="BackPro")
 
-    # # run test
+    # run test
     # testSimple = aux.runTest(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="Simple", isTune=False)
     # testBackPro = aux.runTest(dataSetName=dataTitle, fullDataSet=dataSet, isReg=regression, normalCol=normalCol, networkType="BackPro", isTune=False)
 
