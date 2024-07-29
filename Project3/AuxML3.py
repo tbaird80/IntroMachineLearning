@@ -7,9 +7,24 @@ import NeuralNetworkClass as network
 import copy
 
 def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRate=0, numHiddenNodesPercentage=0, isTune=False):
+    """
+    The wrapper function that will run our regular test cases
+
+    @param dataSetName: the data set name that we are working with
+    @param fullDataSet: the full data set that we are working with
+    @param isReg: whether the test is a regression output
+    @param normalCol: the columns that need to be normalized
+    @param networkType: the type of network that we were trying to create
+    @param learningRate: the learning rate that we will adjust our gradient descent by
+    @param numHiddenNodesPercentage: the number of hidden nodes for multiple layer neural networks
+    @param isTune: whether this is for tuning or not
+    @return: returns the relevant test directory and the validation set that has been tested
+    """
 
     # create current test directory
     uniqueTestDir = dataSetName + "/" + networkType
+
+    # set the parameters of the test where relevant
     if isTune:
         batchesToRun = 1
     else:
@@ -19,6 +34,7 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
         batchesToRun = 5
         learningRate, numHiddenNodesPercentage = getTunedParameters(dataSetName, networkType)
 
+    # we will be training the network all the way back to the input layer
     currentIndexStop = 0
 
     # create test table
@@ -27,11 +43,18 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
     # we want to run a 5x2, so create 5 loops
     currentTestBatch = 1
     currentTestID = 1
+
+    # run until we reach our desired number of tests
     while currentTestBatch <= batchesToRun:
+        # split out data sets into 20% tune, 40% train1/test2, and 40% train2/test1
         tuneSet, testSet1, testSet2 = createTuneTrainTest(fullDataSet, isReg, normalCol)
 
         currentTestRound = 1
+
+        # run the two batches of tests for our current split data set
         while currentTestRound <= 2:
+
+            # set the test and train depending on the index of the round
             if currentTestRound == 1:
                 currentTrain = testSet1.copy()
                 currentTest = testSet2.copy()
@@ -39,6 +62,7 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
                 currentTrain = testSet2.copy()
                 currentTest = testSet1.copy()
 
+            # create our network with the desired parameters
             currentNetwork = network.NNet(dataSetName=dataSetName, isRegression=isReg, trainingData=currentTrain,
                                           normalCols=normalCol, proportionHiddenNodesToInput=numHiddenNodesPercentage, networkType=networkType)
 
@@ -49,8 +73,10 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
             print("***********************Starting testing network " + dataSetName + " " + str(currentTestID) +
                   " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
 
+            # train our network
             currentNetwork.trainNetwork(tuneSet, learningRate, indexStop=currentIndexStop, isTune=isTune)
 
+            # if its a tune set, the final test will be done on the tune set
             if isTune:
                 print("\n")
                 print("**Checking performance for tuned hyperparameter " + currentNetwork.dataName + " " + str(currentTestID) + " "
@@ -63,6 +89,7 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
                 validationOutput['learningRate'] = learningRate
                 validationOutput['numHiddenNodesPercentage'] = numHiddenNodesPercentage
 
+            # otherwise, it will run the final test on the other test set
             else:
                 print("\n")
                 print("**Testing tuned network " + currentNetwork.dataName + " " + str(currentTestID) + " "
@@ -77,9 +104,11 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
 
             currentOutput = pd.concat([currentOutput, validationOutput])
 
+            # write down copy of test to save to memory if not a tune round
             if not isTune:
                 currentOutput.to_csv(currentTestFile, index=True)
 
+            # increment all of our counters
             currentTestRound += 1
             currentTestID += 1
         currentTestBatch += 1
@@ -87,14 +116,25 @@ def runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRat
     return uniqueTestDir, currentOutput
 
 def tuneNetwork(dataSetName, fullDataSet, isReg, normalCol, networkType):
+    '''
+    Allows us to tune the hyperparamters of our test sets
 
-    # hyperparameter options
+    @param dataSetName: the data set name that we are working with
+    @param fullDataSet: the full data set that we are working with
+    @param isReg: whether the test is a regression output
+    @param normalCol: the columns that need to be normalized
+    @param networkType: the type of network that we were trying to create
+    @return: nothing
+    '''
+
+    # hyperparameter options to choose from. Abalone has different upper range to ensure it does end up with an adjusted learning rate of over 1
     if dataSetName == 'Abalone':
         learningRateOptions = [.001, .01, .05]
     else:
         learningRateOptions = [.001, .01, .1]
     numHiddenNodesPercentageOptions = [.5, .75]
 
+    # if our network is simple, we do not need to worry about the number of hidden nodes, so nothing to check on there
     if networkType == 'Simple':
         for currentLearnRate in learningRateOptions:
             print("\n")
@@ -104,6 +144,7 @@ def tuneNetwork(dataSetName, fullDataSet, isReg, normalCol, networkType):
             print("---------------------------------Starting tuning learning rate " + dataSetName + " " + str(currentLearnRate) +
                       " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "------------")
 
+            # run the test function
             testDir, testOutput = runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRate=currentLearnRate, numHiddenNodesPercentage=.5, isTune=True)
 
             # create test directory if not present
@@ -112,6 +153,7 @@ def tuneNetwork(dataSetName, fullDataSet, isReg, normalCol, networkType):
             # create test file path
             currentTestFile = testDir + "/" + str(currentLearnRate) + "testOutput.csv"
 
+            # return the test output to memory
             testOutput.to_csv(currentTestFile, index=True)
 
     else:
@@ -119,10 +161,12 @@ def tuneNetwork(dataSetName, fullDataSet, isReg, normalCol, networkType):
         parameterOptions = pd.DataFrame({'learningRate': learningRateOptions * 2,
                                          'numHiddenNodes': numHiddenNodesPercentageOptions * 3})
 
+        # order the parameters so that we start with the smaller numbers
         parameterOptions = parameterOptions.sort_values(by='learningRate')
 
         # iterate through all the parameter options
         for currentParametersIndex in parameterOptions.index.tolist():
+            # grab our current hyperparameters to test out
             currentLearningRate = parameterOptions.loc[currentParametersIndex, 'learningRate']
             currentHiddenNodePercent = parameterOptions.loc[currentParametersIndex, 'numHiddenNodes']
 
@@ -132,6 +176,7 @@ def tuneNetwork(dataSetName, fullDataSet, isReg, normalCol, networkType):
             print("---------------------------------Starting tuning learning rate " + dataSetName + " " + str(currentLearningRate) + " and percent of " + str(currentHiddenNodePercent) +
                   " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "------------")
 
+            # run our test
             testDir, testOutput = runTest(dataSetName, fullDataSet, isReg, normalCol, networkType, learningRate=currentLearningRate, numHiddenNodesPercentage=currentHiddenNodePercent, isTune=True)
 
             # create test directory if not present
@@ -140,6 +185,7 @@ def tuneNetwork(dataSetName, fullDataSet, isReg, normalCol, networkType):
             # create test file path
             currentTestFile = testDir + "/" + str(currentLearningRate) + "LearningRate" + str(currentHiddenNodePercent) + "NodePercent" + "testOutput.csv"
 
+            # write our test to memory
             testOutput.to_csv(currentTestFile, index=True)
 
     print("-------------------------------------------------------------------------------------------------------------------")
@@ -148,10 +194,22 @@ def tuneNetwork(dataSetName, fullDataSet, isReg, normalCol, networkType):
     print("---------------------------------Finished tuning learning rate " + dataSetName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "-------------------")
 
 def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='AutoEncoder'):
+    '''
+    Similar to the runTest function but allows us to first train our autoencoder and then swap out the first two layers
+    of our network with those values.
+
+    @param dataSetName: the data set name that we are working with
+    @param fullDataSet: the full data set that we are working with
+    @param isReg: whether the test is a regression output
+    @param normalCol: the columns that need to be normalized
+    @param networkType: the type of network that we were trying to create
+    @return: nothing
+    '''
     # create current test directory
     uniqueTestDir = dataSetName + "/" + networkType + "/" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S")
     getDirectory(uniqueTestDir)
 
+    # create our output file and set our parameters for our test
     currentAutoEncoderFile = uniqueTestDir + "/autoEncoders.csv"
     currentAutoEncoderTestFile = uniqueTestDir + "/autoEncodersTest.csv"
     currentTestFile = uniqueTestDir + "/testOutput.csv"
@@ -167,11 +225,14 @@ def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='
     currentTestBatch = 1
     currentTestID = 1
 
+    # run all of our tests
     while currentTestBatch <= batchesToRun:
         tuneSet, testSet1, testSet2 = createTuneTrainTest(fullDataSet, isReg, normalCol)
 
         currentTestRound = 1
         while currentTestRound <= 2:
+
+            # in our 5x2, set one test as train for 1st round the other for round 2
             if currentTestRound == 1:
                 currentTrain = testSet1.copy()
                 currentTest = testSet2.copy()
@@ -179,12 +240,15 @@ def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='
                 currentTrain = testSet2.copy()
                 currentTest = testSet1.copy()
 
+            # create our network
             currentNetwork = network.NNet(dataSetName=dataSetName, isRegression=isReg, trainingData=currentTrain.copy(),
                                           normalCols=normalCol, proportionHiddenNodesToInput=numHiddenNodesPercentage, networkType='BackPro')
 
+            # store down variables that we need later
             tempIsReg = currentNetwork.isReg
             tempFullNetwork = hardCopyDataframe(currentNetwork.network)
 
+            # adjust our network features to help with our autoencoder
             currentNetwork.isReg = True
             currentNetwork.network = hardCopyDataframe(currentNetwork.autoencoder)
 
@@ -195,8 +259,10 @@ def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='
             print("***********************Starting testing network " + dataSetName + " " + str(currentTestID) +
                   " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
 
+            # train our autoencoder
             currentNetwork.trainNetwork(tuneSet.copy(), learningRate, indexStop=0, isAutoEncoder=True)
 
+            # test it out on our test and train set to check out if we have any over-tuning
             print("\n")
             print("**Testing tuned autoencoder " + currentNetwork.dataName + " " + str(currentTestID) + " "
                   + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
@@ -231,8 +297,10 @@ def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='
             print("***********************Starting testing network " + dataSetName + " " + str(currentTestID) +
                   " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
 
+            # train the updated network
             currentNetwork.trainNetwork(tuneSet.copy(), learningRate, indexStop=1)
 
+            # test it out on our test and train set to check out if we have any over-tuning
             print("\n")
             print("**Testing tuned network " + currentNetwork.dataName + " " + str(currentTestID) + " "
                   + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
@@ -255,6 +323,7 @@ def runWithAutoEncoder(dataSetName, fullDataSet, isReg, normalCol, networkType='
             currentOutput = pd.concat([currentOutput, validationOutputTest, validationOutputTrain])
             currentOutput.to_csv(currentTestFile, index=True)
 
+            # increment our test round values
             currentTestRound += 1
             currentTestID += 1
         currentTestBatch += 1
@@ -279,14 +348,26 @@ def normalizeNumberValues(testSet, trainSet, colsNormalize):
             testSet[currentCol] = (testSet[currentCol] - dataMin) / (dataMax - dataMin)
         else:
             continue
-    #return testSet
 
 def hardCopyDataframe(currentDataFrame):
+    '''
+    Hard copy over our dataframe to ensure it is passed by value rather than reference
+
+    @param currentDataFrame: the data frame to copy
+    @return: hard copy of the dataframe
+    '''
     # need to adjust hard copy to account for dictionary columns
     dataframeCopy = currentDataFrame.applymap(lambda x: copy.deepcopy(x) if isinstance(x, dict) else x)
     return dataframeCopy
 
 def getTunedParameters(dataName, testType):
+    '''
+    Grab the best performing tuned parameters for a given test type
+
+    @param dataName: the data set that we are dealing with
+    @param testType: the type of test that we are attempting to run
+    @return: the best performing learning rate and percent of hidden nodes needed
+    '''
     # Specify the directory containing the CSV files
     directory = dataName + '/' + testType + '/' + 'TuningTests'
 
@@ -305,8 +386,10 @@ def getTunedParameters(dataName, testType):
     # Concatenate all DataFrames in the list into one DataFrame
     tuningOutputs = pd.concat(tuningOutputsList, ignore_index=True)
 
+    # group our performance by our success rate
     aggTuningOutputs = tuningOutputs[['learningRate', 'lossValue', 'numHiddenNodesPercentage']].groupby(['learningRate', 'numHiddenNodesPercentage'], as_index=False).mean()
 
+    # grab the best performing parameters
     learningRate = aggTuningOutputs.loc[aggTuningOutputs['lossValue'].idxmin(), 'learningRate']
     numHiddenNodesPercentage = aggTuningOutputs.loc[aggTuningOutputs['lossValue'].idxmin(), 'numHiddenNodesPercentage']
 
@@ -363,10 +446,19 @@ def splitDataFrame(dataSet, splitPercentage, isReg):
     return set1, set2
 
 def createTuneTrainTest(dataSet, isReg, normalCols):
+    '''
+    split our data set into a tune set, train set, and test set
+
+    @param dataSet: the data set that we are splitting
+    @param isReg: whether the data set is a regression or not
+    @param normalCols: the columns that we need to normalize
+    @return: the three sets of data split up
+    '''
     # split into tune, test, and train sets
     tuneSet, trainTestSet = splitDataFrame(dataSet, .2, isReg)
     trainSet, testSet = splitDataFrame(trainTestSet, .5, isReg)
 
+    # normalize our sets by the train set
     normalizeDataSet = trainSet.copy()
     normalizeNumberValues(tuneSet, normalizeDataSet, normalCols)
     normalizeNumberValues(trainSet, normalizeDataSet, normalCols)
@@ -375,6 +467,12 @@ def createTuneTrainTest(dataSet, isReg, normalCols):
     return tuneSet, trainSet, testSet
 
 def getDirectory(desiredPath):
+    '''
+    creates directory if it does not exist
+
+    @param desiredPath: the path we want to check for existence
+    @return: nothing
+    '''
     # Check if the directory exists
     if not os.path.exists(desiredPath):
         # If the directory does not exist, create it

@@ -7,9 +7,8 @@ import AuxML3 as aux
 
 if __name__ == '__main__':
     """
-    This is our main function for the Computer Hardware test set. It will define, prune, and test the set to return an effectiveness
-    value for the decision tree algorithm. If you would like to run yourself, I would recommend doing so in chunks. Create full tree first,
-    prune tree, test full tree, test prune tree, and then compare results.
+    This is our main function for the Breast Cancer test set. It will train neural networks as simple regressions, multi-layer
+    hidden node networks, and we will try out an autoencoder to see if we can condense out input layer.
 
     """
     pd.set_option('display.max_columns', None)
