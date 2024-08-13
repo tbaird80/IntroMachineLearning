@@ -6,7 +6,7 @@ import random
 import os
 
 def createNewTestDirectory(trackType, learnType, discountFactor):
-    uniqueTestDir = trackType + "Track/" + learnType + "/" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "_DF=" + discountFactor
+    uniqueTestDir = trackType + "Track/" + learnType + "/" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "_DF=" + str(discountFactor)
     if not os.path.exists(uniqueTestDir):
         # If the directory does not exist, create it
         os.makedirs(uniqueTestDir)
@@ -63,7 +63,7 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
 
             # run until we reach finish line
             while notFinished:
-                findCurrentState(track.actionTable.loc[currentActionIndex])
+                #findCurrentState(track.actionTable.loc[currentActionIndex])
 
                 # update our times visited and learning rate
                 track.actionTable.loc[currentActionIndex, 'learningRate'] = 1 / (1 + track.actionTable.loc[currentActionIndex, 'timesVisited'])
@@ -77,7 +77,7 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
                 if nextLandingState == 'F':
                     # grab prev Q Value and update it to new value accounting for next action
                     prevQValue = track.actionTable.loc[currentActionIndex, 'QValue']
-                    track.actionTable.loc[currentActionIndex, 'QValue'] = prevQValue + track.actionTable.loc[currentActionIndex, 'learningRate'] * (-1 + 0 - prevQValue)
+                    track.actionTable.loc[currentActionIndex, 'QValue'] = prevQValue + track.actionTable.loc[currentActionIndex, 'learningRate'] * (-1 - prevQValue)
                     # we reached finish line, so the testing is done
                     notFinished = False
 
@@ -106,7 +106,8 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
 
                     currentActionIndex = nextStateActionActualIndex
 
-        print("***********************Updating Value Table for **Round " + str(outerIndex) + "**" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
+        print("***********************Updating Value Table for " + track.trackFamily + str(track.smallerTrackID) + " **Round " + str(outerIndex) + " " + str(track.discountFactor) +
+              "**" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
         track.updateValueTable()
         print(track.checkConvergence())
         # write table to memory for easy access next time
@@ -116,8 +117,8 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
 
     finalOutputDirectory = track.trackType + "Track/" + track.learnType
     finalStateOutput = finalOutputDirectory + "/stateTable.csv"
-    finalActionOutput = outputDirectory + "/actionTable.csv"
-    finalHistoricalOutput = outputDirectory + "/historicalOutput.csv"
+    finalActionOutput = finalOutputDirectory + "/actionTable.csv"
+    finalHistoricalOutput = finalOutputDirectory + "/historicalOutput.csv"
 
     track.stateTable.to_csv(finalStateOutput, index=True)
     track.actionTable.to_csv(finalActionOutput, index=True)

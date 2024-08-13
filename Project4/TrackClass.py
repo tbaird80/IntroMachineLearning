@@ -46,14 +46,16 @@ class Track:
         prevStateTable = pd.read_csv(prevStateTablePath, index_col=0)
 
         self.actionTable = self.actionTable.drop(columns=['QValue'])
-        self.actionTable = self.actionTable.merge(prevActionTable['xLoc', 'yLoc', 'xVel', 'yVel', 'xAccel', 'yAccel', 'QValue', 'timesVisited', 'learningRate'],
-                                                  on=['xLoc', 'yLoc', 'xVel', 'yVel', 'xAccel', 'yAccel'])
+        self.actionTable = self.actionTable.merge(prevActionTable[['xLoc', 'yLoc', 'xVel', 'yVel', 'xAccel', 'yAccel', 'QValue', 'timesVisited', 'learningRate']],
+                                                  on=['xLoc', 'yLoc', 'xVel', 'yVel', 'xAccel', 'yAccel'],
+                                                  how='left')
 
         self.historicalValues = prevHistoricalTable
 
         self.stateTable = self.stateTable.drop(columns=['currentValue'])
-        self.stateTable = self.stateTable.merge(prevStateTable['xLocState', 'yLocState', 'xVelState', 'yVelState', 'currentValue'],
-                                                on=['xLocState', 'yLocState', 'xVelState', 'yVelState', ])
+        self.stateTable = self.stateTable.merge(prevStateTable[['xLocState', 'yLocState', 'xVelState', 'yVelState', 'currentValue']],
+                                                on=['xLocState', 'yLocState', 'xVelState', 'yVelState'],
+                                                how='left')
 
     def createStateTable(self):
         savedDirectory = self.trackType + "Track"

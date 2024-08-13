@@ -12,17 +12,21 @@ if __name__ == '__main__':
 
     # numSmallerTracks = 7
     # currentTrackID = 1
-    #
-    # while currentTrackID <= numSmallerTracks:
-    #     currentTrackName = "Smaller" + str(currentTrackID) + trackType
-    #     nextTrack = TrackClass.Track(currentTrackName, learnType='valueIteration', learningRate=0, discountFactor=.9, epsilon=.1)
-    #     currentTrackID += 1
 
-    currentTrackID = 1
-    currentTrackName = "Smaller" + str(currentTrackID) + trackType
-    nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='QLearning', learningRate=0,
-                                 discountFactor=.99, epsilon=.1, smallerTrackID=currentTrackID)
+    for currentTrackID in range(1, 5):
+        currentTrackName = "Smaller" + str(currentTrackID) + trackType
+        nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='QLearning', learningRate=0,
+                                     discountFactor=.99, epsilon=.1, smallerTrackID=currentTrackID)
+        Aux.trainQLearningSARSASubTrack(nextTrack, trainType='Q')
+        currentTrackID += 1
 
-    Aux.trainQLearningSARSASubTrack(nextTrack, trainType='Q')
+    for currentTrackID in range(1, 5):
+        currentTrackName = "Smaller" + str(currentTrackID) + trackType
+        nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='QLearning', learningRate=0,
+                                     discountFactor=.9, epsilon=.1, smallerTrackID=currentTrackID)
+        Aux.trainQLearningSARSASubTrack(nextTrack, trainType='Q')
+        currentTrackID += 1
+
+
 
 
