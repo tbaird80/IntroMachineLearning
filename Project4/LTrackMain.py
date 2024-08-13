@@ -20,7 +20,8 @@ if __name__ == '__main__':
 
     currentTrackID = 1
     currentTrackName = "Smaller" + str(currentTrackID) + trackType
-    nextTrack = TrackClass.Track(currentTrackName, learnType='QLearning', learningRate=0, discountFactor=.99, epsilon=.1)
+    nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='QLearning', learningRate=0,
+                                 discountFactor=.99, epsilon=.1, smallerTrackID=currentTrackID)
 
     Aux.trainQLearningSARSASubTrack(nextTrack, trainType='Q')
 

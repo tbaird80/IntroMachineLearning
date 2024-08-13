@@ -7,11 +7,12 @@ import os
 
 class Track:
 
-    def __init__(self, trackType, learnType, learningRate=0, discountFactor=0, epsilon=.1, returnStart=False, smallerTrackID=0):
-        rawTrack, trackTable = Aux.readTrackFile(trackType)
+    def __init__(self, trackName, trackFamily, learnType, learningRate=0, discountFactor=0, epsilon=.1, returnStart=False, smallerTrackID=0):
+        rawTrack, trackTable = Aux.readTrackFile(trackName)
         self.rawTrack = rawTrack
         self.currentTrack = trackTable
-        self.trackType = trackType
+        self.trackType = trackName
+        self.trackFamily = trackFamily
         self.learnType = learnType
         self.learningRate = learningRate
         self.discountFactor = discountFactor
@@ -21,10 +22,10 @@ class Track:
         self.returnStart = returnStart
         self.smallerTrackID = smallerTrackID
 
-        print("***********************Starting to build State Table for " + trackType + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
+        print("***********************Starting to build State Table for " + trackName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
         self.stateTable = self.createStateTable()
 
-        print("***********************Starting to build Action Table for " + trackType + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
+        print("***********************Starting to build Action Table for " + trackName + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
         self.actionTable = self.createActionTable()
 
         # update our tables to account for previous runs
@@ -32,10 +33,27 @@ class Track:
             self.updateForPreviousRuns()
 
     def updateForPreviousRuns(self):
+        # find the results of the previous run
         prevRun = self.smallerTrackID - 1
+        savedDirectory = "Smaller" + str(prevRun) + self.trackFamily + "Track/" + self.learnType
+        prevActionTablePath = savedDirectory + "/actionTable.csv"
+        prevHistoricalTablePath = savedDirectory + "/historicalOutput.csv"
+        prevStateTablePath = savedDirectory + "/stateTable.csv"
 
-        savedDirectory = self.trackType + "Track/" + self.learnType
-        prevActionTable = savedDirectory + "/actionTable.csv"
+        # read from local directory
+        prevActionTable = pd.read_csv(prevActionTablePath, index_col=0)
+        prevHistoricalTable = pd.read_csv(prevHistoricalTablePath, index_col=0)
+        prevStateTable = pd.read_csv(prevStateTablePath, index_col=0)
+
+        self.actionTable = self.actionTable.drop(columns=['QValue'])
+        self.actionTable = self.actionTable.merge(prevActionTable['xLoc', 'yLoc', 'xVel', 'yVel', 'xAccel', 'yAccel', 'QValue', 'timesVisited', 'learningRate'],
+                                                  on=['xLoc', 'yLoc', 'xVel', 'yVel', 'xAccel', 'yAccel'])
+
+        self.historicalValues = prevHistoricalTable
+
+        self.stateTable = self.stateTable.drop(columns=['currentValue'])
+        self.stateTable = self.stateTable.merge(prevStateTable['xLocState', 'yLocState', 'xVelState', 'yVelState', 'currentValue'],
+                                                on=['xLocState', 'yLocState', 'xVelState', 'yVelState', ])
 
     def createStateTable(self):
         savedDirectory = self.trackType + "Track"

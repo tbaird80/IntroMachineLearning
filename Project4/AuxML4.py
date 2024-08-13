@@ -39,12 +39,16 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
     historicalOutput = outputDirectory + "/historicalOutput.csv"
 
     # add in random Q values off the bat, store them down for reference later
-    track.actionTable['QValue'] = np.random.uniform(-.1, 0, size=len(track.actionTable))
+    track.actionTable.loc[track.actionTable['QValue'].isna(), 'QValue'] = np.random.uniform(-.01, 0, track.actionTable['QValue'].isna().sum())
     track.updateValueTable()
 
     # init a few columns to help with tracking attempts
-    track.actionTable['timesVisited'] = 0
-    track.actionTable['learningRate'] = 1
+    if 'timesVisited' in track.actionTable.columns:
+        track.actionTable.loc[:, 'timesVisited'] = np.where(track.actionTable['timesVisited'].isna(), 0, track.actionTable['timesVisited'])
+        track.actionTable.loc[:, 'learningRate'] = np.where(track.actionTable['learningRate'].isna(), 1, track.actionTable['learningRate'])
+    else:
+        track.actionTable.loc[:, 'timesVisited'] = 0
+        track.actionTable.loc[:, 'learningRate'] = 1
 
     for outerIndex in range(1001):
         # we are going to run it 10 times before updating value table
@@ -118,7 +122,6 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
     track.stateTable.to_csv(finalStateOutput, index=True)
     track.actionTable.to_csv(finalActionOutput, index=True)
     track.historicalValues.to_csv(finalHistoricalOutput, index=True)
-
 
 def readTrackFile(trackType):
     fileName = trackType + "-track.txt"
