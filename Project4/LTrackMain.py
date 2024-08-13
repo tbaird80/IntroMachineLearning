@@ -15,16 +15,16 @@ if __name__ == '__main__':
 
     for currentTrackID in range(1, 5):
         currentTrackName = "Smaller" + str(currentTrackID) + trackType
-        nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='QLearning', learningRate=0,
+        nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='SARSA', learningRate=0,
                                      discountFactor=.99, epsilon=.1, smallerTrackID=currentTrackID)
-        Aux.trainQLearningSARSASubTrack(nextTrack, trainType='Q')
+        Aux.trainQLearningSARSASubTrack(nextTrack, trainType='SARSA')
         currentTrackID += 1
 
     for currentTrackID in range(1, 5):
         currentTrackName = "Smaller" + str(currentTrackID) + trackType
-        nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='QLearning', learningRate=0,
+        nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='SARSA', learningRate=0,
                                      discountFactor=.9, epsilon=.1, smallerTrackID=currentTrackID)
-        Aux.trainQLearningSARSASubTrack(nextTrack, trainType='Q')
+        Aux.trainQLearningSARSASubTrack(nextTrack, trainType='SARSA')
         currentTrackID += 1
 
 
