@@ -1,16 +1,25 @@
 import AuxML4 as Aux
 import pandas as pd
 import numpy as np
-import datetime
+from datetime import datetime
+import os
+
 
 class Track:
 
-    def __init__(self, trackType, learnType, learningRate, discountFactor=0, epsilon=.1):
-        self.currentTrack = Aux.readTrackFile(trackType)
+    def __init__(self, trackType, learnType, learningRate=0, discountFactor=0, epsilon=.1, returnStart=False, smallerTrackID=0):
+        rawTrack, trackTable = Aux.readTrackFile(trackType)
+        self.rawTrack = rawTrack
+        self.currentTrack = trackTable
+        self.trackType = trackType
         self.learnType = learnType
         self.learningRate = learningRate
         self.discountFactor = discountFactor
         self.epsilon = epsilon
+        self.historicalValues = pd.DataFrame({'EpochNumber': [],
+                                              'SumOfValues': []})
+        self.returnStart = returnStart
+        self.smallerTrackID = smallerTrackID
 
         print("***********************Starting to build State Table for " + trackType + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
         self.stateTable = self.createStateTable()
@@ -18,7 +27,30 @@ class Track:
         print("***********************Starting to build Action Table for " + trackType + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
         self.actionTable = self.createActionTable()
 
+        # update our tables to account for previous runs
+        if self.smallerTrackID > 1:
+            self.updateForPreviousRuns()
+
+    def updateForPreviousRuns(self):
+        prevRun = self.smallerTrackID - 1
+
+        savedDirectory = self.trackType + "Track/" + self.learnType
+        prevActionTable = savedDirectory + "/actionTable.csv"
+
     def createStateTable(self):
+        savedDirectory = self.trackType + "Track"
+        stateTableFilePath = savedDirectory + "/StateTable.csv"
+
+        if os.path.exists(stateTableFilePath):
+            print(stateTableFilePath + " data exists, reading from csv")
+
+            # read from local directory
+            fullStateTable = pd.read_csv(stateTableFilePath, index_col=0)
+            return fullStateTable
+        elif not os.path.exists(savedDirectory):
+            print("Creating directory:" + savedDirectory)
+            os.makedirs(savedDirectory)
+
         # find the coordinates that are valid resting points
         validStateCoordinates = self.currentTrack[self.currentTrack.locType.isin(['S', '.', 'F'])]
 
@@ -36,14 +68,24 @@ class Track:
         # create new columns for reference later
         fullStateTable.loc[:, 'indexMap'] = fullStateTable.index
         fullStateTable.loc[:, 'currentValue'] = 0
-        fullStateTable.loc[:, 'nextValue'] = 0
-        fullStateTable.loc[:, 'timesVisited'] = 0
 
+        # write table to memory for easy access next time
+        fullStateTable.to_csv(stateTableFilePath, index=True)
         return fullStateTable
 
     def createActionTable(self):
+        stateActionTableFilePath = self.trackType + "Track/StateActionTable.csv"
+
+        # check if our table already exists
+        if os.path.exists(stateActionTableFilePath):
+            print(stateActionTableFilePath + " data exists, reading from csv")
+
+            # read from local directory
+            fullStateActionTable = pd.read_csv(stateActionTableFilePath, index_col=0)
+            return fullStateActionTable
+
         # find the coordinate points that are valid action spaces
-        nonFinishCoordinates = self.currentTrack[self.currentTrack.locType.isin(['S', '.'])]
+        validCoordinates = self.currentTrack[self.currentTrack.locType.isin(['S', '.'])]
 
         # create dictionary of all possible states and actions
         stateActionDict = {'xVel': list(range(-5, 6)), 'yVel': list(range(-5, 6)), 'xAccel': [-1, 0, 1], 'yAccel': [-1, 0, 1]}
@@ -61,7 +103,7 @@ class Track:
         stateActionOptions.loc[:, 'yVelAdj'] = np.where(stateActionOptions['yVelAdj'] > 5, 5, stateActionOptions['yVelAdj'])
 
         # merge in coordinates to give full table of actions/coordinates
-        fullStateActionTable = nonFinishCoordinates.merge(stateActionOptions, how='cross')
+        fullStateActionTable = validCoordinates.merge(stateActionOptions, how='cross')
 
         # subset table as there are overlaps in state/action/result
         condensedStateActionTable = fullStateActionTable[['xLoc', 'yLoc', 'xVel', 'yVel', 'xVelAdj', 'yVelAdj']].drop_duplicates()
@@ -73,32 +115,31 @@ class Track:
         condensedStateActionTable.loc[:, 'yLocNextFail'] = condensedStateActionTable['yLoc'] + condensedStateActionTable['yVel']
 
         # find all the intermediate locations between proposed start and end locations on map
-        condensedStateActionTable.loc[:, 'nextLocationsSuccess'] = condensedStateActionTable.apply(lambda row: Aux.bresenhamsAlgorithm(row['xLoc'],
-                                                                                                                                       row['yLoc'],
-                                                                                                                                       row['xLocNextSuccess'],
-                                                                                                                                       row['yLocNextSuccess']), axis=1)
-        condensedStateActionTable.loc[:, 'nextLocationsFail'] = condensedStateActionTable.apply(lambda row: Aux.bresenhamsAlgorithm(row['xLoc'],
-                                                                                                                                    row['yLoc'],
-                                                                                                                                    row['xLocNextFail'],
-                                                                                                                                    row['yLocNextFail']), axis=1)
+        print("**Bresenham Algo for Success " + self.trackType + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
+        condensedStateActionTable.loc[:, 'landingSpotSuccess'] = condensedStateActionTable.apply(lambda row: Aux.nextTrackLoc(self.currentTrack,
+                                                                                                                              row['xLoc'],
+                                                                                                                              row['yLoc'],
+                                                                                                                              row['xLocNextSuccess'],
+                                                                                                                              row['yLocNextSuccess'],
+                                                                                                                              self.returnStart), axis=1)
 
-        # given the possible locations, provide the actual landing spot accounting for the shape of the track
-        condensedStateActionTable.loc[:, 'landingSpotSuccess'] = condensedStateActionTable.apply(lambda row: Aux.nextTrackLoc(self.currentTrack, row['nextLocationsSuccess']), axis=1)
-        condensedStateActionTable.loc[:, 'landingSpotFail'] = condensedStateActionTable.apply(lambda row: Aux.nextTrackLoc(self.currentTrack, row['nextLocationsFail']), axis=1)
+        print("**Bresenham Algo for Fail " + self.trackType + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
+        condensedStateActionTable.loc[:, 'landingSpotFail'] = condensedStateActionTable.apply(lambda row: Aux.nextTrackLoc(self.currentTrack,
+                                                                                                                           row['xLoc'],
+                                                                                                                           row['yLoc'],
+                                                                                                                           row['xLocNextFail'],
+                                                                                                                           row['yLocNextFail'],
+                                                                                                                           self.returnStart), axis=1)
 
-        # condense the state action table further given overlaps to speed up calculations
-        furtherCondensedStateActionTable = condensedStateActionTable[['landingSpotSuccess', 'landingSpotFail']].drop_duplicates()
+        print("**Finding the relevant landing descriptions " + self.trackType + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
 
         # pull out the relevant X/Y/type of the actual landing spot calculated above
-        furtherCondensedStateActionTable.loc[:, 'nextXSuccess'] = furtherCondensedStateActionTable.apply(lambda row: row['landingSpotSuccess'][0], axis=1)
-        furtherCondensedStateActionTable.loc[:, 'nextYSuccess'] = furtherCondensedStateActionTable.apply(lambda row: row['landingSpotSuccess'][1], axis=1)
-        furtherCondensedStateActionTable.loc[:, 'landingTypeSuccess'] = furtherCondensedStateActionTable.apply(lambda row: row['landingSpotSuccess'][2], axis=1)
-        furtherCondensedStateActionTable.loc[:, 'nextXFail'] = furtherCondensedStateActionTable.apply(lambda row: row['landingSpotFail'][0], axis=1)
-        furtherCondensedStateActionTable.loc[:, 'nextYFail'] = furtherCondensedStateActionTable.apply(lambda row: row['landingSpotFail'][1], axis=1)
-        furtherCondensedStateActionTable.loc[:, 'landingTypeFail'] = furtherCondensedStateActionTable.apply(lambda row: row['landingSpotFail'][2], axis=1)
-
-        # merge back into condensed state once states pulled out
-        condensedStateActionTable = condensedStateActionTable.merge(furtherCondensedStateActionTable, on=['landingSpotSuccess', 'landingSpotFail'])
+        condensedStateActionTable.loc[:, 'nextXSuccess'] = condensedStateActionTable.apply(lambda row: row['landingSpotSuccess'][0], axis=1)
+        condensedStateActionTable.loc[:, 'nextYSuccess'] = condensedStateActionTable.apply(lambda row: row['landingSpotSuccess'][1], axis=1)
+        condensedStateActionTable.loc[:, 'landingTypeSuccess'] = condensedStateActionTable.apply(lambda row: row['landingSpotSuccess'][2], axis=1)
+        condensedStateActionTable.loc[:, 'nextXFail'] = condensedStateActionTable.apply(lambda row: row['landingSpotFail'][0], axis=1)
+        condensedStateActionTable.loc[:, 'nextYFail'] = condensedStateActionTable.apply(lambda row: row['landingSpotFail'][1], axis=1)
+        condensedStateActionTable.loc[:, 'landingTypeFail'] = condensedStateActionTable.apply(lambda row: row['landingSpotFail'][2], axis=1)
 
         # adjust the resulting velocity measure to reset to 0, 0 when it hits a wall
         condensedStateActionTable.loc[:, 'nextXVelSuccess'] = np.where(condensedStateActionTable['landingTypeSuccess'] == '#', 0, condensedStateActionTable['xVelAdj'])
@@ -115,16 +156,18 @@ class Track:
                                                      'nextXFail', 'nextYFail', 'landingTypeFail',
                                                      'nextXVelSuccess', 'nextYVelSuccess', 'nextXVelFail', 'nextYVelFail']]
 
-        # init our Q value
+        # init our Q value and times visited
         fullStateActionTable['QValue'] = 0
 
+        print("**Merge in all of the relevant index maps " + self.trackType + " " + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "**")
+
         # merge in our mapped values to the state in question for the current state
-        fullStateActionTable = fullStateActionTable.merge(self.stateTable[['xLocState', 'yLocState', 'xVelState', 'yVelState', 'indexMap']],
+        fullStateActionTable = fullStateActionTable.merge(self.stateTable[['xLocState', 'yLocState', 'xVelState', 'yVelState', 'indexMap', 'locTypeState']],
                                                           left_on=['xLoc', 'yLoc', 'xVel', 'yVel'],
                                                           right_on=['xLocState', 'yLocState', 'xVelState', 'yVelState'],
                                                           how='left')
         fullStateActionTable = fullStateActionTable.drop(columns=['xLocState', 'yLocState', 'xVelState', 'yVelState'])
-        fullStateActionTable = fullStateActionTable.rename(columns={'indexMap': 'currentStateValueMap'})
+        fullStateActionTable = fullStateActionTable.rename(columns={'indexMap': 'currentStateValueMap', 'locTypeState': 'landingTypeCurrent'})
 
         # merge in our mapped values to the state in question for the next state if success
         fullStateActionTable = fullStateActionTable.merge(self.stateTable[['xLocState', 'yLocState', 'xVelState', 'yVelState', 'indexMap']],
@@ -142,36 +185,78 @@ class Track:
         fullStateActionTable = fullStateActionTable.drop(columns=['xLocState', 'yLocState', 'xVelState', 'yVelState'])
         fullStateActionTable = fullStateActionTable.rename(columns={'indexMap': 'failValueMap'})
 
+        # write the table to memory for easy access next time
+        fullStateActionTable.to_csv(stateActionTableFilePath, index=True)
         return fullStateActionTable
 
     def updateQValues(self):
-        if self.learnType == 'valueIteration':
-            # merge in the success value from state table
-            self.actionTable = self.actionTable.merge(self.stateTable[['indexMap', 'currentValue']], left_on=['successValueMap'], right_on=['indexMap'])
-            self.actionTable = self.actionTable.drop(columns=['indexMap'])
-            self.actionTable = self.actionTable.rename(columns={'currentValue': 'successValue'})
+        # merge in the success value from state table
+        self.actionTable = self.actionTable.merge(self.stateTable[['indexMap', 'currentValue']], left_on=['successValueMap'], right_on=['indexMap'])
+        self.actionTable = self.actionTable.drop(columns=['indexMap'])
+        self.actionTable = self.actionTable.rename(columns={'currentValue': 'successValue'})
+        self.actionTable['successValue'].fillna(0, inplace=True)
 
-            # merge in the failure value from state table
-            self.actionTable = self.actionTable.merge(self.stateTable[['indexMap', 'currentValue']], left_on=['failValueMap'], right_on=['indexMap'])
-            self.actionTable = self.actionTable.drop(columns=['indexMap'])
-            self.actionTable = self.actionTable.rename(columns={'currentValue': 'failValue'})
+        # merge in the failure value from state table
+        self.actionTable = self.actionTable.merge(self.stateTable[['indexMap', 'currentValue']], left_on=['failValueMap'], right_on=['indexMap'])
+        self.actionTable = self.actionTable.drop(columns=['indexMap'])
+        self.actionTable = self.actionTable.rename(columns={'currentValue': 'failValue'})
+        self.actionTable['failValue'].fillna(0, inplace=True)
 
-            # calculate the Q value
-            self.actionTable.loc[:, 'QValue'] = .9 * (.8 * self.actionTable['successValue'] + .2 * self.actionTable['failValue'])
+        # calculate the Q value
+        self.actionTable.loc[:, 'QValue'] = - 1 + self.discountFactor * (.8 * self.actionTable['successValue'] + .2 * self.actionTable['failValue'])
 
-            # drop the success/failure values to
-            self.actionTable = self.actionTable.drop(columns=['successValue', 'failValue'])
+        # drop the success/failure values to
+        self.actionTable = self.actionTable.drop(columns=['successValue', 'failValue'])
 
     def updateValueTable(self):
+        # save down the previous values for historical record
+        nextEpochNumber = len(self.historicalValues)
+        currentValues = self.stateTable['currentValue'].abs().sum()
+
+        newRow = pd.DataFrame({'EpochNumber': [nextEpochNumber],
+                               'SumOfValues': [currentValues]})
+
+        self.historicalValues = pd.concat([self.historicalValues, newRow])
+
         # find the max Q value
         maxQAction = self.actionTable[['currentStateValueMap', 'QValue']].groupby(['currentStateValueMap'], as_index=False).max('QValue')
 
+        # merge back into the state table
         self.stateTable = self.stateTable.merge(maxQAction,
                                                 left_on=['indexMap'],
                                                 right_on=['currentStateValueMap'],
                                                 how='left')
 
-        self.stateTable['QValue'].fillna(self.stateTable['nextValue'], inplace=True)
-        self.stateTable.loc[:, 'nextValue'] = self.stateTable['QValue']
+        self.stateTable['QValue'].fillna(self.stateTable['currentValue'], inplace=True)
+        self.stateTable.loc[:, 'currentValue'] = self.stateTable['QValue']
         self.stateTable = self.stateTable.drop(columns=['currentStateValueMap', 'QValue'])
 
+    def checkConvergence(self):
+        if len(self.historicalValues) == 1:
+            return 1000
+
+        # Get the last two values from column 'A'
+        lastTwoValuesToCheck = self.historicalValues['SumOfValues'].iloc[-2:]
+
+        # Calculate the difference
+        convergenceCheck = lastTwoValuesToCheck.iloc[1] - lastTwoValuesToCheck.iloc[0]
+
+        return convergenceCheck
+
+    def printCurrentMap(self):
+        # grab current raw track
+        trackVisual = self.rawTrack
+
+        # Determine the width of each cell for proper alignment
+        max_val_len = len(str(max(max(row) for row in trackVisual)))
+        index_width = max(len(str(len(trackVisual) - 1)), len(str(len(trackVisual[0]) - 1)))
+
+        # Print column indices
+        print(" " * (index_width + 4) + " ".join(f"{i:{max_val_len}}" for i in range(len(trackVisual[0]))))
+
+        # Print the array rows with row indices
+        for i, row in enumerate(trackVisual):
+            print(f"{i:{index_width}} [" + " ".join(f"{x:{max_val_len}}" for x in row) + f"] {i:{index_width}}")
+
+        # Print row indices at the bottom
+        print(" " * (index_width + 2) + " ".join(f"{i:{max_val_len}}" for i in range(len(trackVisual[0]))))
