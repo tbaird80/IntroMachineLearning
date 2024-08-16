@@ -1,10 +1,29 @@
 import AuxML4 as Aux
+import AuxTestML4 as AuxTest
 import pandas as pd
 import numpy as np
 import TrackClass
 
 if __name__ == '__main__':
     trackType = 'L'  # replace with your file name
+
+    learnTypeList = ['SARSA', 'QLearning']
+    tauList = [100, 200]
+    DFList = [.9, .99]
+
+    for currentLearn in learnTypeList:
+        for currentTau in tauList:
+            for currentDF in DFList:
+                for currentTrackID in range(1, 9):
+                    currentTrackName = "Smaller" + str(currentTrackID) + trackType
+                    nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType=currentLearn,
+                                                 discountFactor=currentDF, tau=currentTau, smallerTrackID=currentTrackID)
+                    Aux.trainQLearningSARSASubTrack(nextTrack, trainType=currentLearn)
+                    currentTrackID += 1
+
+                nextTrack = TrackClass.Track(trackName=trackType, trackFamily=trackType, learnType=currentLearn,
+                                             discountFactor=currentDF, tau=currentTau, smallerTrackID=0)
+                testRuns = AuxTest.runTests(nextTrack, trainType=currentLearn)
 
     # newTrack = TrackClass.Track(trackType, learnType='valueIteration', learningRate=0, discountFactor=.9, epsilon=.1)
 
@@ -13,20 +32,22 @@ if __name__ == '__main__':
     # numSmallerTracks = 7
     # currentTrackID = 1
 
-    for currentTrackID in range(1, 5):
-        currentTrackName = "Smaller" + str(currentTrackID) + trackType
-        nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='SARSA', learningRate=0,
-                                     discountFactor=.99, epsilon=.1, smallerTrackID=currentTrackID)
-        Aux.trainQLearningSARSASubTrack(nextTrack, trainType='SARSA')
-        currentTrackID += 1
+    # for currentTrackID in range(8, 9):
+    #     currentTrackName = "Smaller" + str(currentTrackID) + trackType
+    #     nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='QLearning',
+    #                                  discountFactor=.99, smallerTrackID=currentTrackID)
+    #     Aux.trainQLearningSARSASubTrack(nextTrack, trainType='QLearning')
+    #     currentTrackID += 1
+    #
+    # for currentTrackID in range(5, 9):
+    #     currentTrackName = "Smaller" + str(currentTrackID) + trackType
+    #     nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='SARSA',
+    #                                  discountFactor=.99, smallerTrackID=currentTrackID)
+    #     Aux.trainQLearningSARSASubTrack(nextTrack, trainType='SARSA')
+    #     currentTrackID += 1
 
-    for currentTrackID in range(1, 5):
-        currentTrackName = "Smaller" + str(currentTrackID) + trackType
-        nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='SARSA', learningRate=0,
-                                     discountFactor=.9, epsilon=.1, smallerTrackID=currentTrackID)
-        Aux.trainQLearningSARSASubTrack(nextTrack, trainType='SARSA')
-        currentTrackID += 1
-
-
-
-
+    # currentTrackName = trackType
+    # nextTrack = TrackClass.Track(trackName=currentTrackName, trackFamily=trackType, learnType='QLearning',
+    #                              discountFactor=.99, smallerTrackID=0)
+    # testRuns = AuxTest.runTests(nextTrack, trainType='QLearning')
+    # print(testRuns)

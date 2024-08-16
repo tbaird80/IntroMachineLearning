@@ -6,7 +6,11 @@ import random
 import os
 
 def createNewTestDirectory(trackType, learnType, discountFactor):
-    uniqueTestDir = trackType + "Track/" + learnType + "/" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "_DF=" + str(discountFactor)
+    if len(trackType) == 1:
+        uniqueTestDir = trackType + "Track/" + learnType + "/" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "_DF=" + str(discountFactor)
+    else:
+        uniqueTestDir = trackType + "Track/" + learnType + "/" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "_DF=" + str(discountFactor)
+
     if not os.path.exists(uniqueTestDir):
         # If the directory does not exist, create it
         os.makedirs(uniqueTestDir)
@@ -18,7 +22,7 @@ def createNewTestDirectory(trackType, learnType, discountFactor):
 
 def trainValueIteration(track):
     # create new directory for our training
-    outputDirectory = createNewTestDirectory(track.trackType, track.learnType)
+    outputDirectory = createNewTestDirectory(track.trackType, track.learnType, track.tau)
     stateOutput = outputDirectory + "/stateTable.csv"
     actionOutput = outputDirectory + "/actionTable.csv"
 
@@ -31,7 +35,7 @@ def trainValueIteration(track):
     track.stateTable.to_csv(stateOutput, index=True)
     track.actionTable.to_csv(actionOutput, index=True)
 
-def trainQLearningSARSASubTrack(track, trainType='Q'):
+def trainQLearningSARSASubTrack(track, trainType='QLearning'):
     # create new directory for our training
     outputDirectory = createNewTestDirectory(track.trackType, track.learnType, track.discountFactor)
     stateOutput = outputDirectory + "/stateTable.csv"
@@ -50,23 +54,32 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
         track.actionTable.loc[:, 'timesVisited'] = 0
         track.actionTable.loc[:, 'learningRate'] = 1
 
-    for outerIndex in range(1001):
+    if track.smallerTrackID == 0:
+        numberOfTests = 101
+    else:
+        numberOfTests = 101
+
+    for outerIndex in range(numberOfTests):
         # we are going to run it 10 times before updating value table
         for innerIndex in range(11):
             # print the map for reference
             # track.printCurrentMap()
             # find our starting action state as random state
-            currentActionIndex = findStartingActionState(track, testType='TrainRandom')
+            if track.smallerTrackID == 0:
+                currentActionIndex = findStartingActionState(track, testType='Best')
+            else:
+                currentActionIndex = findStartingActionState(track, testType='TrainRandom')
 
             # our starting action state is S for starting line
             notFinished = True
+            currentActionLoopIndex = 0
 
             # run until we reach finish line
             while notFinished:
-                #findCurrentState(track.actionTable.loc[currentActionIndex])
+                #findCurrentState(track, currentActionIndex)
 
                 # update our times visited and learning rate
-                track.actionTable.loc[currentActionIndex, 'learningRate'] = 1 / (1 + track.actionTable.loc[currentActionIndex, 'timesVisited'])
+                track.actionTable.loc[currentActionIndex, 'learningRate'] = (1 * track.tau) / (track.tau + track.actionTable.loc[currentActionIndex, 'timesVisited'])
                 track.actionTable.loc[currentActionIndex, 'timesVisited'] += 1
 
                 # find the next state given a successful action
@@ -88,7 +101,7 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
 
                     # either take the best or random depending on our epsilon search
                     epsilonGreedy = random.uniform(0, 1)
-                    if epsilonGreedy > track.epsilon:
+                    if epsilonGreedy > .2:
                         nextStateActionActualIndex = nextStateActionBestIndex
                     else:
                         nextStateActionActualIndex = findNextActionIndex(track, nextStateIndex, nextStepType='Random')
@@ -97,7 +110,7 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
                     prevQValue = track.actionTable.loc[currentActionIndex, 'QValue']
 
                     # our next action Q value will be best option for Q learning and actual for SARSA
-                    if trainType == 'Q':
+                    if trainType == 'QLearning':
                         nextActionQValue = track.actionTable.loc[nextStateActionBestIndex, 'QValue']
                     else:
                         nextActionQValue = track.actionTable.loc[nextStateActionActualIndex, 'QValue']
@@ -106,7 +119,13 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
 
                     currentActionIndex = nextStateActionActualIndex
 
-        print("***********************Updating Value Table for " + track.trackFamily + str(track.smallerTrackID) + " **Round " + str(outerIndex) + " " + str(track.discountFactor) +
+                    currentActionLoopIndex += 1
+
+                    if currentActionLoopIndex > 1000:
+                        notFinished = False
+
+        print("***********************Updating Value Table for " + track.trackFamily + " " + track.learnType + " " + str(track.tau) + " " + str(track.discountFactor)
+              + " **Smaller Track " + str(track.smallerTrackID) + ": Round " + str(outerIndex) +
               "**" + datetime.now().strftime("%d.%m.%Y_%I.%M.%S") + "*****************************")
         track.updateValueTable()
         print(track.checkConvergence())
@@ -115,6 +134,7 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
         track.actionTable.to_csv(actionOutput, index=True)
         track.historicalValues.to_csv(historicalOutput, index=True)
 
+    # write to the current test set
     finalOutputDirectory = track.trackType + "Track/" + track.learnType
     finalStateOutput = finalOutputDirectory + "/stateTable.csv"
     finalActionOutput = finalOutputDirectory + "/actionTable.csv"
@@ -123,6 +143,17 @@ def trainQLearningSARSASubTrack(track, trainType='Q'):
     track.stateTable.to_csv(finalStateOutput, index=True)
     track.actionTable.to_csv(finalActionOutput, index=True)
     track.historicalValues.to_csv(finalHistoricalOutput, index=True)
+
+    # write to the overall test set
+    finalOutputDirectory = track.trackFamily + "Track/" + track.learnType
+    finalStateOutput = finalOutputDirectory + "/stateTable.csv"
+    finalActionOutput = finalOutputDirectory + "/actionTable.csv"
+    finalHistoricalOutput = finalOutputDirectory + "/historicalOutput.csv"
+
+    track.stateTable.to_csv(finalStateOutput, index=True)
+    track.actionTable.to_csv(finalActionOutput, index=True)
+    track.historicalValues.to_csv(finalHistoricalOutput, index=True)
+
 
 def readTrackFile(trackType):
     fileName = trackType + "-track.txt"
@@ -233,38 +264,55 @@ def findClosestStart(track, x0, y0):
 
     return returnX, returnY
 
-def findNextActionIndex(track, nextActionIndex, nextStepType='Success'):
+def findNextActionIndex(track, nextStateIndex, nextStepType='Success'):
     # filter our action table by the current state in question
-    currentStateActions = track.actionTable[track.actionTable['currentStateValueMap'] == nextActionIndex]
+    currentStateActions = track.actionTable[track.actionTable['currentStateValueMap'] == nextStateIndex]
 
     # if we had a successful action, then we want the best action choice of that state
     if nextStepType == 'Success':
         nextStateActionIndex = currentStateActions['QValue'].idxmax()
+        # check for loop, set to random if so
+        if nextStateIndex == track.actionTable.loc[nextStateActionIndex, 'successValueMap'] == track.actionTable.loc[nextStateActionIndex, 'failValueMap']:
+            nextStateActionIndex = currentStateActions.sample(n=1).index[0]
     else:
         nextStateActionIndex = currentStateActions.sample(n=1).index[0]
 
     return nextStateActionIndex
 
-def findStartingActionState(track, testType='Test'):
+def findStartingActionState(track, testType='Best'):
     # find only our next starting spot
     if testType == 'TrainRandom':
         startingOptions = track.actionTable[(track.actionTable['landingTypeCurrent'] == 'S')]
         firstStateIndex = startingOptions.sample(n=1).index[0]
+    elif testType == 'TrainRandomActualStart':
+        startingOptions = track.actionTable[(track.actionTable['landingTypeCurrent'] == 'S') & (track.actionTable['xVel'] == 0) & (track.actionTable['yVel'] == 0)]
+        firstStateIndex = startingOptions.sample(n=1).index[0]
     elif testType == 'TrainBest':
         startingOptions = track.actionTable[(track.actionTable['landingTypeCurrent'] == 'S')]
         firstStateIndex = startingOptions['QValue'].idxmax()
+    elif testType == 'TrainBestActualStart':
+        startingOptions = track.actionTable[(track.actionTable['landingTypeCurrent'] == 'S') & (track.actionTable['xVel'] == 0) & (track.actionTable['yVel'] == 0)]
+        firstStateIndex = startingOptions['QValue'].idxmax()
     else:
-        startingOptions = track.actionTable[(track.actionTable['landingTypeCurrent'] == 'S') & (track.stateTable['xVel'] == 0) & (track.stateTable['yVel'] == 0)]
+        startingOptions = track.actionTable[(track.actionTable['landingTypeCurrent'] == 'S') & (track.actionTable['xVel'] == 0) & (track.actionTable['yVel'] == 0)]
         firstStateIndex = startingOptions['QValue'].idxmax()
 
     return firstStateIndex
 
-def findCurrentState(currentActionRecord):
+def findCurrentState(currentTrack, currentActionIndex):
+    currentActionRecord = currentTrack.actionTable.loc[currentActionIndex]
     currentX = currentActionRecord['xLoc']
     currentY = currentActionRecord['yLoc']
     currentXVel = currentActionRecord['xVel']
     currentYVel = currentActionRecord['yVel']
     currentXAccel = currentActionRecord['xAccel']
     currentYAccel = currentActionRecord['yAccel']
+    currentState = currentActionRecord['currentStateValueMap']
+    nextStateSuccess = currentActionRecord['successValueMap']
+    nextStateFail = currentActionRecord['failValueMap']
 
-    print(f"We have a current coordinate of [{currentX}, {currentY}], speed of [{currentXVel}, {currentYVel}], and acceleration of [{currentXAccel}, {currentYAccel}]")
+    print(f"At {currentActionIndex}, we have a current coordinate of [{currentX}, {currentY}], speed of [{currentXVel}, {currentYVel}], and acceleration of [{currentXAccel}, {currentYAccel}]")
+    print(f"Currently at {currentState}, landing spots are Success: {nextStateSuccess} and Fail: {nextStateFail}")
+
+    currentTrack.printCurrentMap(currentX, currentY)
+

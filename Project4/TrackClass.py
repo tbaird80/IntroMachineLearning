@@ -3,20 +3,20 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import os
+import copy
 
 
 class Track:
 
-    def __init__(self, trackName, trackFamily, learnType, learningRate=0, discountFactor=0, epsilon=.1, returnStart=False, smallerTrackID=0):
+    def __init__(self, trackName, trackFamily, learnType, discountFactor=0, tau=500, returnStart=False, smallerTrackID=0):
         rawTrack, trackTable = Aux.readTrackFile(trackName)
         self.rawTrack = rawTrack
         self.currentTrack = trackTable
         self.trackType = trackName
         self.trackFamily = trackFamily
         self.learnType = learnType
-        self.learningRate = learningRate
         self.discountFactor = discountFactor
-        self.epsilon = epsilon
+        self.tau = tau
         self.historicalValues = pd.DataFrame({'EpochNumber': [],
                                               'SumOfValues': []})
         self.returnStart = returnStart
@@ -31,6 +31,8 @@ class Track:
         # update our tables to account for previous runs
         if self.smallerTrackID > 1:
             self.updateForPreviousRuns()
+        elif self.smallerTrackID == 0:
+            self.updateForPreviousRunsFinal()
 
     def updateForPreviousRuns(self):
         # find the results of the previous run
@@ -56,6 +58,17 @@ class Track:
         self.stateTable = self.stateTable.merge(prevStateTable[['xLocState', 'yLocState', 'xVelState', 'yVelState', 'currentValue']],
                                                 on=['xLocState', 'yLocState', 'xVelState', 'yVelState'],
                                                 how='left')
+
+    def updateForPreviousRunsFinal(self):
+        savedDirectory = self.trackFamily + "Track/" + self.learnType
+        prevActionTablePath = savedDirectory + "/actionTable.csv"
+        prevHistoricalTablePath = savedDirectory + "/historicalOutput.csv"
+        prevStateTablePath = savedDirectory + "/stateTable.csv"
+
+        # read from local directory
+        self.actionTable = pd.read_csv(prevActionTablePath, index_col=0)
+        self.historicalValues = pd.read_csv(prevHistoricalTablePath, index_col=0)
+        self.stateTable = pd.read_csv(prevStateTablePath, index_col=0)
 
     def createStateTable(self):
         savedDirectory = self.trackType + "Track"
@@ -263,9 +276,11 @@ class Track:
 
         return convergenceCheck
 
-    def printCurrentMap(self):
+    def printCurrentMap(self, X, Y):
         # grab current raw track
-        trackVisual = self.rawTrack
+        trackVisual = copy.deepcopy(self.rawTrack)
+
+        trackVisual[Y][X] = '$'
 
         # Determine the width of each cell for proper alignment
         max_val_len = len(str(max(max(row) for row in trackVisual)))
