@@ -4,10 +4,9 @@ from datetime import datetime
 if __name__ == '__main__':
     # List of scripts to run
     scriptsToRun = [
-        "LTrackMain.py",
-        "OTrackMain.py",
         "WTrackMain.py",
-        "RTrackMain.py"
+        "RTrackMain.py",
+        "RCrashTrackMain.py"
     ]
 
     # Dictionary to store the status of each script

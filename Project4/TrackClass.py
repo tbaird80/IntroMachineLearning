@@ -7,8 +7,19 @@ import copy
 
 
 class Track:
+    def __init__(self, trackName, trackFamily, learnType, discountFactor=0, tau=0, returnStart=False, smallerTrackID=None):
+        """
+        Track constructor function
 
-    def __init__(self, trackName, trackFamily, learnType, discountFactor=0, tau=500, returnStart=False, smallerTrackID=0):
+        @param trackName: The track name (different if we are dealing with subtrack)
+        @param trackFamily: The family of tracks we are working with
+        @param learnType: The type of learning taking place
+        @param discountFactor: The discount factor
+        @param tau: The tau we use to anneal our learning rate
+        @param returnStart: If crashing should return us to start
+        @param smallerTrackID: the ID of the subtrack
+        """
+
         rawTrack, trackTable = Aux.readTrackFile(trackName)
         self.rawTrack = rawTrack
         self.currentTrack = trackTable
@@ -29,12 +40,21 @@ class Track:
         self.actionTable = self.createActionTable()
 
         # update our tables to account for previous runs
-        if self.smallerTrackID > 1:
+        if self.learnType == 'ValueIteration':
+            # pass
+            self.updateForPreviousRunsFinal()
+        elif self.smallerTrackID > 1:
             self.updateForPreviousRuns()
         elif self.smallerTrackID == 0:
             self.updateForPreviousRunsFinal()
 
     def updateForPreviousRuns(self):
+        """
+        When training by subtracks first, make sure we incorporate previous training
+
+        @return: nothing to return
+        """
+
         # find the results of the previous run
         prevRun = self.smallerTrackID - 1
         savedDirectory = "Smaller" + str(prevRun) + self.trackFamily + "Track/" + self.learnType
@@ -60,17 +80,29 @@ class Track:
                                                 how='left')
 
     def updateForPreviousRunsFinal(self):
+        """
+        When training sub tracks and finally have our full track, grab the previously trained tracks
+
+        @return: no return
+        """
+
         savedDirectory = self.trackFamily + "Track/" + self.learnType
         prevActionTablePath = savedDirectory + "/actionTable.csv"
-        prevHistoricalTablePath = savedDirectory + "/historicalOutput.csv"
+        # prevHistoricalTablePath = savedDirectory + "/historicalOutput.csv"
         prevStateTablePath = savedDirectory + "/stateTable.csv"
 
         # read from local directory
         self.actionTable = pd.read_csv(prevActionTablePath, index_col=0)
-        self.historicalValues = pd.read_csv(prevHistoricalTablePath, index_col=0)
+        # self.historicalValues = pd.read_csv(prevHistoricalTablePath, index_col=0)
         self.stateTable = pd.read_csv(prevStateTablePath, index_col=0)
 
     def createStateTable(self):
+        """
+        Create our state table
+
+        @return: our created state table
+        """
+
         savedDirectory = self.trackType + "Track"
         stateTableFilePath = savedDirectory + "/StateTable.csv"
 
@@ -107,6 +139,12 @@ class Track:
         return fullStateTable
 
     def createActionTable(self):
+        """
+        Create our action state pair table
+
+        @return: our created action state pair table
+        """
+
         stateActionTableFilePath = self.trackType + "Track/StateActionTable.csv"
 
         # check if our table already exists
@@ -222,15 +260,21 @@ class Track:
         fullStateActionTable.to_csv(stateActionTableFilePath, index=True)
         return fullStateActionTable
 
-    def updateQValues(self):
+    def updateQValuesVI(self):
+        """
+        Update the Q values for value iteration
+
+        @return: no return
+        """
+
         # merge in the success value from state table
-        self.actionTable = self.actionTable.merge(self.stateTable[['indexMap', 'currentValue']], left_on=['successValueMap'], right_on=['indexMap'])
+        self.actionTable = self.actionTable.reset_index().merge(self.stateTable[['indexMap', 'currentValue']], left_on=['successValueMap'], right_on=['indexMap']).set_index('index')
         self.actionTable = self.actionTable.drop(columns=['indexMap'])
         self.actionTable = self.actionTable.rename(columns={'currentValue': 'successValue'})
         self.actionTable['successValue'].fillna(0, inplace=True)
 
         # merge in the failure value from state table
-        self.actionTable = self.actionTable.merge(self.stateTable[['indexMap', 'currentValue']], left_on=['failValueMap'], right_on=['indexMap'])
+        self.actionTable = self.actionTable.reset_index().merge(self.stateTable[['indexMap', 'currentValue']], left_on=['failValueMap'], right_on=['indexMap']).set_index('index')
         self.actionTable = self.actionTable.drop(columns=['indexMap'])
         self.actionTable = self.actionTable.rename(columns={'currentValue': 'failValue'})
         self.actionTable['failValue'].fillna(0, inplace=True)
@@ -242,6 +286,12 @@ class Track:
         self.actionTable = self.actionTable.drop(columns=['successValue', 'failValue'])
 
     def updateValueTable(self):
+        """
+        Update the value table with most recent updates to Q value
+
+        @return: nothing to return
+        """
+
         # save down the previous values for historical record
         nextEpochNumber = len(self.historicalValues)
         currentValues = self.stateTable['currentValue'].abs().sum()
@@ -265,6 +315,12 @@ class Track:
         self.stateTable = self.stateTable.drop(columns=['currentStateValueMap', 'QValue'])
 
     def checkConvergence(self):
+        """
+        Check the difference in our value table for our last two runs
+
+        @return: the difference in question
+        """
+
         if len(self.historicalValues) == 1:
             return 1000
 
@@ -277,10 +333,18 @@ class Track:
         return convergenceCheck
 
     def printCurrentMap(self, X, Y):
+        """
+        Print the visual of the track
+
+        @param X: The current X of our actor
+        @param Y: The current Y of our actor
+        @return: nothing
+        """
+
         # grab current raw track
         trackVisual = copy.deepcopy(self.rawTrack)
 
-        trackVisual[Y][X] = '$'
+        trackVisual[Y][X] = 'X'
 
         # Determine the width of each cell for proper alignment
         max_val_len = len(str(max(max(row) for row in trackVisual)))
